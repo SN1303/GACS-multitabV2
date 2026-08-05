@@ -17,10 +17,8 @@
     presets: [],
     provisions: [],
     faults: [],
-    filters: { search: '', limit: 25, skip: 0 },
-    activeDeviceTab: 'summary',
-    selectedDevice: null,
-    selectedDeviceParams: {}
+    filters: { search: '', limit: 50, skip: 0 },
+    selectedDevice: null
   };
 
   // --- Initialize Theme ---
@@ -64,15 +62,24 @@
         },
         ...options
       });
-      if (res.status === 401 && state.currentRoute !== 'login') {
-        window.location.hash = '#/login';
-        return null;
-      }
       return res;
     } catch (err) {
       console.error('API Request Error:', err);
       return null;
     }
+  }
+
+  // --- Helper to Extract Device Parameter Values ---
+  function getParamVal(dev, paramNames) {
+    if (!dev) return 'N/A';
+    if (!Array.isArray(paramNames)) paramNames = [paramNames];
+    for (const name of paramNames) {
+      if (dev[name]) {
+        if (dev[name]._value !== undefined) return dev[name]._value;
+        if (dev[name].value && dev[name].value[0] !== undefined) return dev[name].value[0];
+      }
+    }
+    return 'N/A';
   }
 
   // --- Navigation Header ---
@@ -187,12 +194,14 @@
   async function loadDevicesData() {
     let url = `/api/devices?limit=${state.filters.limit}&skip=${state.filters.skip}`;
     if (state.filters.search) {
-      const q = encodeURIComponent(`"${state.filters.search}"`);
-      url += `&filter=${q}`;
+      const q = encodeURIComponent(state.filters.search);
+      url += `&query=${q}`;
     }
     const res = await apiFetch(url);
     if (res && res.ok) {
       state.devices = await res.json();
+    } else {
+      state.devices = [];
     }
   }
 
@@ -216,7 +225,7 @@
             <thead>
               <tr>
                 <th>Status</th>
-                <th>Serial Number</th>
+                <th>Device ID / Serial</th>
                 <th>Product Class</th>
                 <th>IP Address</th>
                 <th>MAC Address</th>
@@ -227,14 +236,21 @@
             <tbody>
               ${state.devices.length === 0 ? `
                 <tr>
-                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found. Click 'Refresh List' or check connection.</td>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
                 </tr>
               ` : state.devices.map(dev => {
-                const serial = dev['DeviceID.SerialNumber']?.value?.[0] || dev._id;
-                const product = dev['DeviceID.ProductClass']?.value?.[0] || 'Unknown';
-                const ip = dev['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress']?.value?.[0] || 'N/A';
-                const mac = dev['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.MACAddress']?.value?.[0] || 'N/A';
-                const lastInform = dev['Events.Inform']?.value?.[0] ? new Date(dev['Events.Inform'].value[0]).toLocaleString() : 'N/A';
+                const serial = dev._id || getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+                const product = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
+                const ip = getParamVal(dev, [
+                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress',
+                  'Device.IP.Interface.1.IPv4Address.1.IPAddress'
+                ]);
+                const mac = getParamVal(dev, [
+                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.MACAddress',
+                  'Device.Ethernet.Interface.1.MACAddress'
+                ]);
+                const lastInformRaw = dev._lastInform || getParamVal(dev, 'Events.Inform');
+                const lastInform = lastInformRaw && lastInformRaw !== 'N/A' ? new Date(lastInformRaw).toLocaleString() : 'N/A';
 
                 return `
                   <tr>
@@ -243,7 +259,7 @@
                         <span class="dot dot-online"></span> Online
                       </span>
                     </td>
-                    <td style="font-weight: 600;">${serial}</td>
+                    <td style="font-weight: 600; font-family: var(--font-mono);">${serial}</td>
                     <td>${product}</td>
                     <td style="font-family: var(--font-mono);">${ip}</td>
                     <td style="font-family: var(--font-mono);">${mac}</td>
@@ -275,20 +291,19 @@
       return `<div class="main-content"><p>Loading device details...</p></div>`;
     }
 
-    const serial = dev['DeviceID.SerialNumber']?.value?.[0] || dev._id;
-    const manufacturer = dev['DeviceID.Manufacturer']?.value?.[0] || 'N/A';
-    const model = dev['DeviceID.ProductClass']?.value?.[0] || 'N/A';
-    const hardware = dev['InternetGatewayDevice.DeviceInfo.HardwareVersion']?.value?.[0] || 'N/A';
-    const software = dev['InternetGatewayDevice.DeviceInfo.SoftwareVersion']?.value?.[0] || 'N/A';
-    const ssid = dev['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID']?.value?.[0] || 'N/A';
-    const pass = dev['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase']?.value?.[0] || 'N/A';
+    const serial = dev._id || getParamVal(dev, 'DeviceID.SerialNumber');
+    const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
+    const model = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
+    const software = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.SoftwareVersion', 'Device.DeviceInfo.SoftwareVersion']);
+    const ssid = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID', 'Device.WiFi.SSID.1.SSID']);
+    const pass = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase', 'Device.WiFi.AccessPoint.1.Security.KeyPassphrase']);
 
     return `
       <div class="main-content fade-in">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <a href="#/devices" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">← Back to Devices List</a>
-            <h1 style="font-weight: 700; margin-top: 0.5rem;">Device Inspector: ${serial}</h1>
+            <h1 style="font-weight: 700; margin-top: 0.5rem; font-family: var(--font-mono);">Device: ${serial}</h1>
           </div>
           <div style="display: flex; gap: 0.5rem;">
             <button id="summon-device-btn" class="btn btn-primary">⚡ Summon / Refresh</button>
@@ -315,17 +330,17 @@
           </div>
         </div>
 
-        <!-- Multi-Tab Quick WLAN Controller -->
+        <!-- Quick Wi-Fi & LAN Controller -->
         <div class="card">
-          <div class="card-title">📶 Quick Wi-Fi & LAN Controller</div>
+          <div class="card-title">📶 Quick Wi-Fi Controller</div>
           <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
             <div>
               <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi SSID</label>
-              <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid}">
+              <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid !== 'N/A' ? ssid : ''}">
             </div>
             <div>
               <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi WPA Passphrase</label>
-              <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass}">
+              <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass !== 'N/A' ? pass : ''}">
             </div>
             <div style="display: flex; align-items: flex-end;">
               <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Apply Wi-Fi Settings</button>
@@ -342,7 +357,15 @@
           <div class="param-tree" id="param-tree-container">
             ${Object.keys(dev).sort().map(key => {
               const item = dev[key];
-              const val = item?.value ? item.value[0] : (item?.object ? '[Object]' : 'N/A');
+              let val = 'N/A';
+              if (item && typeof item === 'object') {
+                if (item._value !== undefined) val = item._value;
+                else if (item.value && item.value[0] !== undefined) val = item.value[0];
+                else if (item._object) val = '[Object]';
+                else val = JSON.stringify(item);
+              } else {
+                val = String(item);
+              }
               return `
                 <div class="param-row">
                   <span class="param-name">${key}</span>
@@ -369,7 +392,6 @@
       <div class="main-content fade-in">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <h1 style="font-weight: 700;">Presets (${state.presets.length})</h1>
-          <button class="btn btn-primary" onclick="alert('Preset Creation Form Ready');">➕ New Preset</button>
         </div>
         <div class="table-container">
           <table class="table">
