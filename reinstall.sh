@@ -62,8 +62,9 @@ clean_uninstall() {
     rm -f /etc/systemd/system/genieacs-*.service
     systemctl daemon-reload
 
-    # Stop MongoDB
-    echo -e "${YELLOW}-> Menghentikan MongoDB...${NC}"
+    # Drop Database & Stop MongoDB
+    echo -e "${YELLOW}-> Membersihkan database MongoDB GenieACS...${NC}"
+    mongosh genieacs --eval "db.dropDatabase()" 2>/dev/null || mongo genieacs --eval "db.dropDatabase()" 2>/dev/null || true
     systemctl stop mongod 2>/dev/null || true
     systemctl disable mongod 2>/dev/null || true
 
@@ -127,6 +128,11 @@ install_mongodb() {
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         apt-get update -y
         apt-get install -y mongodb-org mongodb-org-tools mongodb-database-tools 2>/dev/null || apt-get install -y mongodb-org
+    elif [[ "$UBUNTU_CODENAME" == "noble" ]]; then
+        curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg 2>/dev/null || true
+        echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+        apt-get update -y
+        apt-get install -y mongodb-org mongodb-database-tools 2>/dev/null || apt-get install -y mongodb-org
     else
         curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg 2>/dev/null || true
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
