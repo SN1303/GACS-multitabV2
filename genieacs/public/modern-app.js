@@ -88,6 +88,7 @@
       if (dev[name]) {
         if (dev[name]._value !== undefined) return dev[name]._value;
         if (dev[name].value && dev[name].value[0] !== undefined) return dev[name].value[0];
+        if (typeof dev[name] === 'string' || typeof dev[name] === 'number') return dev[name];
       }
     }
     return 'N/A';
@@ -250,7 +251,8 @@
                   <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
                 </tr>
               ` : state.devices.map(dev => {
-                const serial = dev._id || getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+                const devId = dev._id || dev.id || (dev._deviceId && dev._deviceId._SerialNumber) || getParamVal(dev, ['DeviceID.SerialNumber']);
+                const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : devId;
                 const product = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
                 const ip = getParamVal(dev, [
                   'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress',
@@ -276,7 +278,7 @@
                     <td style="font-family: var(--font-mono);">${mac}</td>
                     <td style="color: var(--text-secondary); font-size: 0.8rem;">${lastInform}</td>
                     <td>
-                      <a href="#/device/${encodeURIComponent(dev._id)}" class="btn btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.75rem;">Inspect</a>
+                      <a href="#/device/${encodeURIComponent(devId)}" class="btn btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.75rem;">Inspect</a>
                     </td>
                   </tr>
                 `;
@@ -290,6 +292,7 @@
 
   // --- 4. Device Details View ---
   async function loadDeviceDetailData(id) {
+    if (!id || id === 'undefined') return;
     const res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
       state.selectedDevice = await res.json();
@@ -299,10 +302,14 @@
   function renderDeviceDetailView() {
     const dev = state.selectedDevice;
     if (!dev) {
-      return `<div class="main-content"><p style="padding: 2rem;">Loading device details...</p></div>`;
+      return `
+        <div class="main-content">
+          <p style="padding: 2rem;">Loading device details for ID: <code>${state.routeParam}</code>...</p>
+        </div>
+      `;
     }
 
-    const serial = dev._id || getParamVal(dev, 'DeviceID.SerialNumber');
+    const serial = dev._id || getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
     const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
     const model = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
     const software = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.SoftwareVersion', 'Device.DeviceInfo.SoftwareVersion']);
