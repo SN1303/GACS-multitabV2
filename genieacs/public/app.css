@@ -877,10 +877,11 @@ html[data-theme="light"] #header>.drawer-wrapper>.drawer, body.light-theme #head
 
 
 #header .user-menu {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    float: none !important;
     color: var(--text-primary);
     font-size: 12.5px;
     font-weight: 500;
@@ -1277,12 +1278,7 @@ body {
     border: 1px solid rgba(0, 255, 135, 0.3)
 }
 
-#header>.user-menu {
-    float: right;
-    margin: 0;
-    display: flex;
-    align-items: center
-}
+
 
 #side-menu {
     width: 210px;
