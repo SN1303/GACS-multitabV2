@@ -41,10 +41,21 @@
 
   // --- Router ---
   function parseHash() {
-    const hash = window.location.hash.slice(2) || 'overview';
-    const parts = hash.split('/');
-    state.currentRoute = parts[0] || 'overview';
-    state.routeParam = parts[1] ? decodeURIComponent(parts[1]) : null;
+    const rawHash = window.location.hash.replace(/^#\/?/, '') || 'overview';
+    const parts = rawHash.split('/');
+    
+    if (parts[0] === 'device' || parts[0] === 'devices') {
+      if (parts.length > 1 && parts[1]) {
+        state.currentRoute = 'device';
+        state.routeParam = decodeURIComponent(parts.slice(1).join('/'));
+      } else {
+        state.currentRoute = 'devices';
+        state.routeParam = null;
+      }
+    } else {
+      state.currentRoute = parts[0] || 'overview';
+      state.routeParam = parts[1] ? decodeURIComponent(parts[1]) : null;
+    }
   }
 
   window.addEventListener('hashchange', () => {
@@ -105,7 +116,7 @@
         <ul class="nav-links">
           ${navItems.map(item => `
             <li>
-              <a href="#/${item.id}" class="nav-link ${state.currentRoute === item.id ? 'active' : ''}">
+              <a href="#/${item.id}" class="nav-link ${state.currentRoute === item.id || (state.currentRoute === 'device' && item.id === 'devices') ? 'active' : ''}">
                 ${item.label}
               </a>
             </li>
@@ -288,7 +299,7 @@
   function renderDeviceDetailView() {
     const dev = state.selectedDevice;
     if (!dev) {
-      return `<div class="main-content"><p>Loading device details...</p></div>`;
+      return `<div class="main-content"><p style="padding: 2rem;">Loading device details...</p></div>`;
     }
 
     const serial = dev._id || getParamVal(dev, 'DeviceID.SerialNumber');
