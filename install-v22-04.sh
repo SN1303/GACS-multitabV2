@@ -19,7 +19,7 @@ UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "Unknown")
 ARCH=$(uname -m)
 
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}================== INSTALASI GENIEACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ==================${NC}"
+echo -e "${GREEN}================== INSTALASI GACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ==================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}==================  KKK   KKK   NNNN    NNN   SSSSSSSSSS  ==================${NC}"
 echo -e "${GREEN}==================  KKK  KKK    NNNNN   NNN   SS          ==================${NC}"
@@ -416,6 +416,6 @@ systemctl restart genieacs-{cwmp,fs,ui,nbi}
 
 # Sukses
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}========== GenieACS UI akses port 3000 : http://$local_ip:3000 ============${NC}"
-echo -e "${GREEN}=================== Informasi: Whatsapp 081947215703 =======================${NC}"
+echo -e "${GREEN}============ GACS UI akses port 3000 : http://$local_ip:3000 ===============${NC}"
+echo -e "${GREEN}=================== Informasi: Whatsapp 081234567890 =======================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
