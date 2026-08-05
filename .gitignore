@@ -1,0 +1,30 @@
+# Logs & Environment
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+
+# Node modules & dependencies
+node_modules/
+dist/
+build/
+public/dist/
+
+# Backup & Original Folders
+genieacs-multitab-ori/
+
+# Database & Runtime Snapshots
+db/*.sqlite
+db/*.db
+db/*.json
+!db/schema.json
+
+# Operating System & IDE junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.tmp
