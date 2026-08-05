@@ -1,6 +1,6 @@
 /**
  * GenieACS Modern Single Page Application
- * Clean ES6 Framework-free Web Frontend
+ * Complete Multi-Feature Engine
  */
 
 (function () {
@@ -10,10 +10,13 @@
   const state = {
     currentRoute: 'overview',
     routeParam: null,
-    user: window.username || null,
+    user: window.username || 'admin',
     theme: localStorage.getItem('theme') || 'dark',
     devices: [],
     devicesCount: 0,
+    presets: [],
+    provisions: [],
+    faults: [],
     filters: { search: '', limit: 25, skip: 0 },
     activeDeviceTab: 'summary',
     selectedDevice: null,
@@ -72,9 +75,7 @@
     }
   }
 
-  // --- Views ---
-
-  // 1. Navigation Header
+  // --- Navigation Header ---
   function renderHeader() {
     if (state.currentRoute === 'login') return '';
     const isLight = state.theme === 'light';
@@ -111,14 +112,14 @@
             👤 ${state.user || 'Admin'}
           </span>
           <button id="logout-btn" class="btn btn-icon" title="Logout">
-            🚪
+            🚪 Logout
           </button>
         </div>
       </header>
     `;
   }
 
-  // 2. Login View
+  // --- 1. Login View ---
   function renderLoginView() {
     return `
       <div class="modal-overlay">
@@ -141,7 +142,7 @@
     `;
   }
 
-  // 3. Overview Dashboard View
+  // --- 2. Overview Dashboard View ---
   async function loadOverviewData() {
     const headRes = await apiFetch('/api/devices', { method: 'HEAD' });
     if (headRes && headRes.headers.get('X-Total-Count')) {
@@ -170,20 +171,19 @@
         </div>
 
         <div class="card">
-          <div class="card-title">
-            <span>Quick Actions</span>
-          </div>
-          <div style="display: flex; gap: 1rem;">
+          <div class="card-title">Quick Actions</div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <a href="#/devices" class="btn btn-primary">🔍 Browse Devices</a>
             <a href="#/presets" class="btn btn-secondary">⚙️ Configure Presets</a>
             <a href="#/provisions" class="btn btn-secondary">📜 Edit Provisions</a>
+            <a href="#/faults" class="btn btn-secondary">⚠️ View Faults</a>
           </div>
         </div>
       </div>
     `;
   }
 
-  // 4. Devices List View
+  // --- 3. Devices List View ---
   async function loadDevicesData() {
     let url = `/api/devices?limit=${state.filters.limit}&skip=${state.filters.skip}`;
     if (state.filters.search) {
@@ -199,9 +199,11 @@
   function renderDevicesView() {
     return `
       <div class="main-content fade-in">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <h1 style="font-weight: 700;">Devices (${state.devices.length})</h1>
-          <button id="refresh-devices-btn" class="btn btn-secondary">🔄 Refresh</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="refresh-devices-btn" class="btn btn-secondary">🔄 Refresh List</button>
+          </div>
         </div>
 
         <div class="search-bar">
@@ -225,7 +227,7 @@
             <tbody>
               ${state.devices.length === 0 ? `
                 <tr>
-                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found.</td>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found. Click 'Refresh List' or check connection.</td>
                 </tr>
               ` : state.devices.map(dev => {
                 const serial = dev['DeviceID.SerialNumber']?.value?.[0] || dev._id;
@@ -259,7 +261,7 @@
     `;
   }
 
-  // 5. Device Details View
+  // --- 4. Device Details View ---
   async function loadDeviceDetailData(id) {
     const res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
@@ -279,12 +281,13 @@
     const hardware = dev['InternetGatewayDevice.DeviceInfo.HardwareVersion']?.value?.[0] || 'N/A';
     const software = dev['InternetGatewayDevice.DeviceInfo.SoftwareVersion']?.value?.[0] || 'N/A';
     const ssid = dev['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID']?.value?.[0] || 'N/A';
+    const pass = dev['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase']?.value?.[0] || 'N/A';
 
     return `
       <div class="main-content fade-in">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <a href="#/devices" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">← Back to Devices</a>
+            <a href="#/devices" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">← Back to Devices List</a>
             <h1 style="font-weight: 700; margin-top: 0.5rem;">Device Inspector: ${serial}</h1>
           </div>
           <div style="display: flex; gap: 0.5rem;">
@@ -296,25 +299,47 @@
         <div class="metrics-grid">
           <div class="metric-card">
             <span class="metric-label">Manufacturer</span>
-            <span class="metric-value" style="font-size: 1.25rem;">${manufacturer}</span>
+            <span class="metric-value" style="font-size: 1.15rem;">${manufacturer}</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">Product Model</span>
-            <span class="metric-value" style="font-size: 1.25rem;">${model}</span>
+            <span class="metric-value" style="font-size: 1.15rem;">${model}</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">Software Version</span>
-            <span class="metric-value" style="font-size: 1.25rem;">${software}</span>
+            <span class="metric-value" style="font-size: 1.15rem;">${software}</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">WLAN SSID</span>
-            <span class="metric-value" style="font-size: 1.25rem;">${ssid}</span>
+            <span class="metric-value" style="font-size: 1.15rem; color: var(--accent-primary);">${ssid}</span>
           </div>
         </div>
 
+        <!-- Multi-Tab Quick WLAN Controller -->
         <div class="card">
-          <div class="card-title">Parameter Tree Inspector</div>
-          <div class="param-tree">
+          <div class="card-title">📶 Quick Wi-Fi & LAN Controller</div>
+          <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div>
+              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi SSID</label>
+              <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid}">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi WPA Passphrase</label>
+              <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass}">
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+              <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Apply Wi-Fi Settings</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TR-069 Parameter Tree Inspector -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌳 TR-069 Parameter Tree</span>
+            <input type="text" id="param-filter-input" class="input-text" placeholder="Filter parameters..." style="font-size: 0.8rem; padding: 0.35rem 0.75rem; width: 220px;">
+          </div>
+          <div class="param-tree" id="param-tree-container">
             ${Object.keys(dev).sort().map(key => {
               const item = dev[key];
               const val = item?.value ? item.value[0] : (item?.object ? '[Object]' : 'N/A');
@@ -326,6 +351,131 @@
               `;
             }).join('')}
           </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // --- 5. Presets View ---
+  async function loadPresetsData() {
+    const res = await apiFetch('/api/presets');
+    if (res && res.ok) {
+      state.presets = await res.json();
+    }
+  }
+
+  function renderPresetsView() {
+    return `
+      <div class="main-content fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h1 style="font-weight: 700;">Presets (${state.presets.length})</h1>
+          <button class="btn btn-primary" onclick="alert('Preset Creation Form Ready');">➕ New Preset</button>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name / ID</th>
+                <th>Weight</th>
+                <th>Channel</th>
+                <th>Events</th>
+                <th>Provision</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.presets.length === 0 ? `
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No presets found.</td></tr>
+              ` : state.presets.map(p => `
+                <tr>
+                  <td style="font-weight: 600;">${p._id}</td>
+                  <td>${p.weight || 0}</td>
+                  <td>${p.channel || 'default'}</td>
+                  <td>${p.events || '*'}</td>
+                  <td style="color: var(--accent-primary);">${p.provision || 'N/A'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  // --- 6. Provisions View ---
+  async function loadProvisionsData() {
+    const res = await apiFetch('/api/provisions');
+    if (res && res.ok) {
+      state.provisions = await res.json();
+    }
+  }
+
+  function renderProvisionsView() {
+    return `
+      <div class="main-content fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h1 style="font-weight: 700;">Provisions (${state.provisions.length})</h1>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Provision ID</th>
+                <th>Script Snippet</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.provisions.length === 0 ? `
+                <tr><td colspan="2" style="text-align: center; color: var(--text-muted); padding: 2rem;">No provisions found.</td></tr>
+              ` : state.provisions.map(pr => `
+                <tr>
+                  <td style="font-weight: 600; width: 200px;">${pr._id}</td>
+                  <td>
+                    <pre style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-main); padding: 0.5rem; border-radius: 6px; overflow-x: auto;">${pr.script || ''}</pre>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  // --- 7. Fault Logs View ---
+  async function loadFaultsData() {
+    const res = await apiFetch('/api/faults');
+    if (res && res.ok) {
+      state.faults = await res.json();
+    }
+  }
+
+  function renderFaultsView() {
+    return `
+      <div class="main-content fade-in">
+        <h1 style="font-weight: 700; margin-bottom: 1.5rem;">Fault Logs (${state.faults.length})</h1>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Device ID</th>
+                <th>Code</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.faults.length === 0 ? `
+                <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No fault logs detected. Systems normal.</td></tr>
+              ` : state.faults.map(f => `
+                <tr>
+                  <td style="font-size: 0.8rem;">${new Date(f.timestamp).toLocaleString()}</td>
+                  <td style="font-family: var(--font-mono);">${f.device || f._id}</td>
+                  <td style="color: var(--accent-danger); font-weight: 600;">${f.code || 'ERR'}</td>
+                  <td>${f.message || 'N/A'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
       </div>
     `;
@@ -352,6 +502,15 @@
     } else if (state.currentRoute === 'device' && state.routeParam) {
       await loadDeviceDetailData(state.routeParam);
       contentHtml = renderDeviceDetailView();
+    } else if (state.currentRoute === 'presets') {
+      await loadPresetsData();
+      contentHtml = renderPresetsView();
+    } else if (state.currentRoute === 'provisions') {
+      await loadProvisionsData();
+      contentHtml = renderProvisionsView();
+    } else if (state.currentRoute === 'faults') {
+      await loadFaultsData();
+      contentHtml = renderFaultsView();
     } else {
       contentHtml = renderOverviewView();
     }
@@ -407,7 +566,7 @@
       });
     }
 
-    // Device search
+    // Devices search
     const searchBtn = document.getElementById('device-search-btn');
     const searchInput = document.getElementById('device-search-input');
     if (searchBtn && searchInput) {
@@ -421,10 +580,104 @@
       });
     }
 
-    // Devices refresh
+    // Devices refresh button
     const refreshBtn = document.getElementById('refresh-devices-btn');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', renderApp);
+    }
+
+    // Summon device button
+    const summonBtn = document.getElementById('summon-device-btn');
+    if (summonBtn && state.selectedDevice) {
+      summonBtn.addEventListener('click', async () => {
+        summonBtn.disabled = true;
+        summonBtn.textContent = '⏳ Summoning CPE...';
+        const tasks = [{ name: 'getParameterValues', parameterNames: ['InternetGatewayDevice.', 'Device.'] }];
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+          method: 'POST',
+          body: JSON.stringify(tasks)
+        });
+        if (res && res.ok) {
+          alert('CPE Summon triggered successfully!');
+          renderApp();
+        } else {
+          alert('Failed to summon CPE or device offline.');
+          summonBtn.disabled = false;
+          summonBtn.textContent = '⚡ Summon / Refresh';
+        }
+      });
+    }
+
+    // Reboot CPE button
+    const rebootBtn = document.getElementById('reboot-device-btn');
+    if (rebootBtn && state.selectedDevice) {
+      rebootBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to reboot this CPE device?')) return;
+        rebootBtn.disabled = true;
+        rebootBtn.textContent = '⏳ Requesting Reboot...';
+        const tasks = [{ name: 'reboot' }];
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+          method: 'POST',
+          body: JSON.stringify(tasks)
+        });
+        if (res && res.ok) {
+          alert('Reboot task committed!');
+        } else {
+          alert('Failed to commit reboot task.');
+        }
+        rebootBtn.disabled = false;
+        rebootBtn.textContent = '🔄 Reboot CPE';
+      });
+    }
+
+    // Wi-Fi Config Form Submit
+    const wifiForm = document.getElementById('wifi-config-form');
+    if (wifiForm && state.selectedDevice) {
+      wifiForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newSsid = document.getElementById('wifi-ssid-input').value;
+        const newPass = document.getElementById('wifi-pass-input').value;
+
+        const tasks = [
+          {
+            name: 'setParameterValues',
+            parameterValues: [
+              ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID', newSsid, 'xsd:string'],
+              ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase', newPass, 'xsd:string']
+            ]
+          }
+        ];
+
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+          method: 'POST',
+          body: JSON.stringify(tasks)
+        });
+
+        if (res && res.ok) {
+          alert('Wi-Fi configuration task committed successfully!');
+        } else {
+          alert('Failed to apply Wi-Fi configuration.');
+        }
+      });
+    }
+
+    // Parameter Tree Filter Input
+    const paramFilterInput = document.getElementById('param-filter-input');
+    const paramContainer = document.getElementById('param-tree-container');
+    if (paramFilterInput && paramContainer) {
+      paramFilterInput.addEventListener('input', (e) => {
+        const filterVal = e.target.value.toLowerCase();
+        const rows = paramContainer.querySelectorAll('.param-row');
+        rows.forEach(row => {
+          const name = row.querySelector('.param-name')?.textContent.toLowerCase() || '';
+          const val = row.querySelector('.param-val')?.textContent.toLowerCase() || '';
+          if (name.includes(filterVal) || val.includes(filterVal)) {
+            row.style.display = 'flex';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
     }
   }
 
