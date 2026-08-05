@@ -877,11 +877,43 @@ html[data-theme="light"] #header>.drawer-wrapper>.drawer, body.light-theme #head
 
 
 #header .user-menu {
-    float: right;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 12px;
+    color: var(--text-primary);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+#header .user-menu a {
+    color: var(--accent-cyan);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--fade);
+}
+
+#header .user-menu a:hover {
+    color: var(--accent-emerald);
+}
+
+#header .user-menu button {
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--fade);
+}
+
+#header .user-menu button:hover {
+    background: var(--accent-cyan);
+    color: var(--bg-main);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
 }
 
 #theme-toggle-btn {
@@ -1886,6 +1918,26 @@ html[data-theme="light"] #theme-toggle-btn:hover, body.light-theme #theme-toggle
     background: #0284C7;
     color: #FFFFFF;
     box-shadow: 0 0 10px rgba(2, 132, 199, 0.4);
+}
+
+html[data-theme="light"] #header .user-menu, body.light-theme #header .user-menu {
+    color: #0F172A;
+}
+
+html[data-theme="light"] #header .user-menu a, body.light-theme #header .user-menu a {
+    color: #0284C7;
+}
+
+html[data-theme="light"] #header .user-menu button, body.light-theme #header .user-menu button {
+    background: #F1F5F9;
+    color: #0F172A;
+    border-color: #CBD5E1;
+}
+
+html[data-theme="light"] #header .user-menu button:hover, body.light-theme #header .user-menu button:hover {
+    background: #0284C7;
+    color: #FFFFFF;
+    border-color: #0284C7;
 }
 
 /*# sourceMappingURL=app.css.map */
