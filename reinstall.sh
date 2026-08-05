@@ -290,6 +290,26 @@ install_multitab_and_restore() {
             apt-get install -y mongodb-database-tools 2>/dev/null || true
             mongorestore --db genieacs --drop "$SCRIPT_DIR/db" 2>/dev/null || true
         fi
+
+        # Auto-update IP Server pada provision 'inform'
+        if [ -n "$local_ip" ]; then
+            echo -e "${YELLOW}-> Mengatur IP Server otomatis (http://${local_ip}:7547) pada provision 'inform'...${NC}"
+            node -e "
+            try {
+                const { MongoClient } = require('$NODE_MODULES_DIR/genieacs/node_modules/mongodb');
+                MongoClient.connect('mongodb://127.0.0.1/genieacs').then(async client => {
+                    const db = client.db();
+                    const doc = await db.collection('provisions').findOne({_id: 'inform'});
+                    if (doc && doc.script) {
+                        const newScript = doc.script.replace(/http:\/\/[0-9\.]+:7547/g, 'http://${local_ip}:7547');
+                        await db.collection('provisions').updateOne({_id: 'inform'}, {\$set: {script: newScript}});
+                        console.log('✅ IP Provision inform otomatis diperbarui ke http://${local_ip}:7547');
+                    }
+                    await client.close();
+                }).catch(() => {});
+            } catch (e) {}
+            " 2>/dev/null || true
+        fi
     else
         echo -e "${RED}⚠️ Direktori '$SCRIPT_DIR/db' tidak ditemukan!${NC}"
     fi
