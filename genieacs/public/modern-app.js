@@ -95,6 +95,15 @@
     return 'N/A';
   }
 
+  // --- Helper to Get Precise Device ID ---
+  function getDeviceId(dev) {
+    if (!dev) return '';
+    if (typeof dev._id === 'string' && dev._id) return dev._id;
+    if (dev._deviceId && typeof dev._deviceId._SerialNumber === 'string') return dev._deviceId._SerialNumber;
+    if (dev.DeviceID && dev.DeviceID.SerialNumber && dev.DeviceID.SerialNumber._value) return dev.DeviceID.SerialNumber._value;
+    return getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+  }
+
   // --- Navigation Header ---
   function renderHeader() {
     if (state.currentRoute === 'login') return '';
@@ -252,7 +261,7 @@
                   <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
                 </tr>
               ` : state.devices.map(dev => {
-                const devId = dev._id || dev.id || (dev._deviceId && dev._deviceId._SerialNumber) || getParamVal(dev, ['DeviceID.SerialNumber']);
+                const devId = getDeviceId(dev);
                 const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : devId;
                 const product = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
                 const ip = getParamVal(dev, [
@@ -295,27 +304,27 @@
   async function loadDeviceDetailData(id) {
     if (!id || id === 'undefined') return;
 
-    // Reset selected device if switching to a different device ID
-    if (!state.selectedDevice || (state.selectedDevice._id !== id && state.selectedDevice.id !== id)) {
+    // Reset current selection state if loading a different device ID
+    if (!state.selectedDevice || getDeviceId(state.selectedDevice) !== id) {
       state.selectedDevice = null;
     }
 
-    // 1. Try finding in loaded devices list
-    let found = state.devices.find(d => d._id === id || d.id === id || (d._deviceId && d._deviceId._SerialNumber === id));
+    // 1. Check loaded array first
+    let found = state.devices.find(d => getDeviceId(d) === id || d._id === id);
     if (found) {
       state.selectedDevice = found;
       return;
     }
 
-    // 2. Fetch directly from GET /api/devices/:id
+    // 2. Fetch directly from API GET /api/devices/:id
     let res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
       state.selectedDevice = await res.json();
       return;
     }
 
-    // 3. Fallback mongo query lookup
-    const queryStr = JSON.stringify({ "$or": [{ "_id": id }, { "DeviceID.SerialNumber": id }] });
+    // 3. Query lookup fallback
+    const queryStr = JSON.stringify({ "$or": [{ "_id": id }, { "_deviceId._SerialNumber": id }, { "DeviceID.SerialNumber._value": id }] });
     res = await apiFetch(`/api/devices?query=${encodeURIComponent(queryStr)}`);
     if (res && res.ok) {
       const arr = await res.json();
@@ -335,7 +344,7 @@
       `;
     }
 
-    const serial = dev._id || getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+    const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : getDeviceId(dev);
     const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
     const model = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
     const software = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.SoftwareVersion', 'Device.DeviceInfo.SoftwareVersion']);
@@ -734,7 +743,7 @@
         const panel = document.getElementById('device-tab-panel');
         if (panel && state.selectedDevice) {
           const dev = state.selectedDevice;
-          const serial = dev._id || getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+          const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : getDeviceId(dev);
           const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
           const model = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
           const software = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.SoftwareVersion', 'Device.DeviceInfo.SoftwareVersion']);
@@ -783,7 +792,7 @@
         summonBtn.disabled = true;
         summonBtn.textContent = '⏳ Summoning CPE...';
         const tasks = [{ name: 'getParameterValues', parameterNames: ['InternetGatewayDevice.', 'Device.'] }];
-        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(getDeviceId(state.selectedDevice))}/tasks`, {
           method: 'POST',
           body: JSON.stringify(tasks)
         });
@@ -806,7 +815,7 @@
         rebootBtn.disabled = true;
         rebootBtn.textContent = '⏳ Requesting Reboot...';
         const tasks = [{ name: 'reboot' }];
-        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(getDeviceId(state.selectedDevice))}/tasks`, {
           method: 'POST',
           body: JSON.stringify(tasks)
         });
@@ -838,7 +847,7 @@
           }
         ];
 
-        const res = await apiFetch(`/api/devices/${encodeURIComponent(state.selectedDevice._id)}/tasks`, {
+        const res = await apiFetch(`/api/devices/${encodeURIComponent(getDeviceId(state.selectedDevice))}/tasks`, {
           method: 'POST',
           body: JSON.stringify(tasks)
         });
