@@ -238,7 +238,7 @@
         </div>
 
         <div class="search-bar">
-          <input type="text" id="device-search-input" class="input-text" placeholder="Search by PPPoE User, IP, SSID, Product Class, Serial Number, MAC..." value="${state.filters.search}">
+          <input type="text" id="device-search-input" class="input-text" placeholder="Search by Serial Number, IP, MAC, Product Class..." value="${state.filters.search}">
           <button id="device-search-btn" class="btn btn-primary">Search</button>
         </div>
 
@@ -247,11 +247,9 @@
             <thead>
               <tr>
                 <th>Status</th>
-                <th>PPPoE User</th>
-                <th>IP Address</th>
-                <th>SSID</th>
-                <th>Product Class</th>
                 <th>Device ID / Serial</th>
+                <th>Product Class</th>
+                <th>IP Address</th>
                 <th>MAC Address</th>
                 <th>Last Inform</th>
                 <th>Action</th>
@@ -260,19 +258,12 @@
             <tbody>
               ${state.devices.length === 0 ? `
                 <tr>
-                  <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
                 </tr>
               ` : state.devices.map(dev => {
                 const devId = getDeviceId(dev);
                 const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : devId;
                 const product = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
-                const pppUser = getParamVal(dev, [
-                  'VirtualParameters.pppUsername',
-                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username',
-                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1.Username',
-                  'Device.PPP.Interface.1.Username'
-                ]);
-                const ssid = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID', 'Device.WiFi.SSID.1.SSID']);
                 const ip = getParamVal(dev, [
                   'VirtualParameters.pppIP',
                   'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress',
@@ -300,11 +291,9 @@
                         <span class="dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span> ${isOnline ? 'Online' : 'Offline'}
                       </span>
                     </td>
-                    <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${pppUser}</td>
-                    <td style="font-family: var(--font-mono);">${ip !== 'N/A' ? `<a href="http://${ip}" target="_blank" style="color: var(--accent-primary);">${ip}</a>` : 'N/A'}</td>
-                    <td style="color: var(--accent-primary); font-weight: 500;">${ssid}</td>
-                    <td>${product}</td>
                     <td style="font-weight: 600; font-family: var(--font-mono);">${serial}</td>
+                    <td>${product}</td>
+                    <td style="font-family: var(--font-mono);">${ip !== 'N/A' ? `<a href="http://${ip}" target="_blank" style="color: var(--accent-primary);">${ip}</a>` : 'N/A'}</td>
                     <td style="font-family: var(--font-mono);">${mac}</td>
                     <td style="color: var(--text-secondary); font-size: 0.8rem;">${lastInform}</td>
                     <td>
