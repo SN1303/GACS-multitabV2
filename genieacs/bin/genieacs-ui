@@ -95,6 +95,44 @@ declare("Device.ManagementServer.PeriodicInformTime", {value: daily}, {value: in
         window.permissionSets = ${JSON.stringify(t)};
       </script>
       <script type="module" src="${Ms}"></script>${r} 
+      <script>
+        (function() {
+          function initThemeToggle() {
+            const userMenu = document.querySelector('#header .user-menu');
+            if (userMenu && !document.querySelector('#theme-toggle-btn')) {
+              const btn = document.createElement('button');
+              btn.id = 'theme-toggle-btn';
+              btn.type = 'button';
+              const updateBtnText = () => {
+                const isLight = document.body.classList.contains('light-theme');
+                btn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+              };
+              updateBtnText();
+              btn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof window.toggleAppTheme === 'function') {
+                  window.toggleAppTheme();
+                } else {
+                  const isLight = document.body.classList.toggle('light-theme');
+                  if (isLight) {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                  } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                  }
+                }
+                updateBtnText();
+              };
+              userMenu.insertBefore(btn, userMenu.firstChild);
+            }
+          }
+          const observer = new MutationObserver(initThemeToggle);
+          observer.observe(document.body, { childList: true, subtree: true });
+          document.addEventListener('DOMContentLoaded', initThemeToggle);
+        })();
+      </script>
     </body>
   </html>
   `});ie.use((0,qs.default)({gzip:{flush:mt.constants.Z_SYNC_FLUSH},deflate:{flush:mt.constants.Z_SYNC_FLUSH},br:{flush:mt.constants.BROTLI_OPERATION_FLUSH,params:{[mt.constants.BROTLI_PARAM_QUALITY]:5}}}));ie.use(_e.routes());ie.use((0,xs.default)(M+"/public"));var Fs=ie.callback();Xr("ui",Je);var js=A("UI_INTERFACE"),Gs=A("UI_PORT");function qr(){setTimeout(dt,5e3).unref(),Promise.all([mn(),Or(),fr.disconnect()]).then(Qr).catch(dt)}function dt(){Or().finally(()=>{process.exit(1)})}if(fr){let e=A("UI_SSL_KEY"),t=A("UI_SSL_CERT"),r={port:Gs,host:js,ssl:e&&t?{key:e,cert:t}:null,timeout:12e4};process.on("unhandledRejection",s=>{throw s}),process.on("uncaughtException",s=>{s.code!=="ERR_IPC_DISCONNECTED"&&(le({message:"Uncaught exception",exception:s,pid:process.pid}),yt().then(qr).catch(dt))});let n=pn().then(()=>{Vr(r,async(s,i)=>Fs(s,i))}).catch(s=>{setTimeout(()=>{throw s})});process.on("SIGINT",()=>{n.finally(()=>{yt().then(qr).catch(dt)})}),process.on("SIGTERM",()=>{n.finally(()=>{yt().then(qr).catch(dt)})})}else{let e=A("UI_WORKER_PROCESSES");de({message:"genieacs-ui starting",pid:process.pid,version:Je}),nn(e,Gs,js),process.on("SIGINT",()=>{de({message:"Received signal SIGINT, exiting",pid:process.pid}),ur()}),process.on("SIGTERM",()=>{de({message:"Received signal SIGTERM, exiting",pid:process.pid}),ur()})}
