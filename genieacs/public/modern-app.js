@@ -293,9 +293,29 @@
   // --- 4. Device Details View ---
   async function loadDeviceDetailData(id) {
     if (!id || id === 'undefined') return;
-    const res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
+
+    // First try loaded in-memory state
+    let found = state.devices.find(d => d._id === id || d.id === id || (d._deviceId && d._deviceId._SerialNumber === id));
+    if (found) {
+      state.selectedDevice = found;
+      return;
+    }
+
+    // Try direct API GET endpoint
+    let res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
       state.selectedDevice = await res.json();
+      return;
+    }
+
+    // Fallback: Query by _id or Serial Number
+    const queryStr = JSON.stringify({ "$or": [{ "_id": id }, { "DeviceID.SerialNumber": id }] });
+    res = await apiFetch(`/api/devices?query=${encodeURIComponent(queryStr)}`);
+    if (res && res.ok) {
+      const arr = await res.json();
+      if (arr && arr.length > 0) {
+        state.selectedDevice = arr[0];
+      }
     }
   }
 
