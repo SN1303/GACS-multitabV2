@@ -21,7 +21,7 @@ git clone https://github.com/SN1303/GACS-multitabV2.git
 ```
 
 ```
-cd multitab
+cd GACS-multitabV2
 ```
 
 ```
@@ -31,7 +31,7 @@ chmod +x install-v22-04.sh && install-armbian.sh
 Ubuntu 20.04/22.04
 
 ```
-install-v22-04.sh
+./install-v22-04.sh
 ```
 
 ARMBIAN
@@ -73,7 +73,7 @@ reboot
 
    ```bash
    git clone https://github.com/SN1303/GACS-multitabV2.git
-   cd multitab
+   cd GACS-multitabV2
    ```
 
 2. **Persiapan Direktori**

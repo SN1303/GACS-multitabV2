@@ -19,7 +19,7 @@ UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "Unknown")
 ARCH=$(uname -m)
 
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}===================== INSTALASI GENIEACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ===================${NC}"
+echo -e "${GREEN}================== INSTALASI GENIEACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ==================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}==================  KKK   KKK   NNNN    NNN   SSSSSSSSSS  ==================${NC}"
 echo -e "${GREEN}==================  KKK  KKK    NNNNN   NNN   SS          ==================${NC}"
@@ -27,7 +27,7 @@ echo -e "${GREEN}==================  KKKKKKK     NNN NN  NNN   SSSSSSSSSS  =====
 echo -e "${GREEN}==================  KKK  KKK    NNN  NN NNN           SS  ==================${NC}"
 echo -e "${GREEN}==================  KKK   KKK   NNN   NNNNN   SSSSSSSSSS  ==================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}========================= . Info 081-947-215-703 ===========================${NC}"
+echo -e "${GREEN}========================= . Info 0812-3456-7890  ===========================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}${NC}"
 echo -e "${GREEN}Autoinstall GenieACS.${NC}"
