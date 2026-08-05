@@ -97,37 +97,54 @@ declare("Device.ManagementServer.PeriodicInformTime", {value: daily}, {value: in
       <script type="module" src="${Ms}"></script>${r} 
       <script>
         (function() {
+          function toggleAppTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || (document.body.classList.contains('light-theme') ? 'light' : 'dark');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            if (newTheme === 'light') {
+              document.documentElement.setAttribute('data-theme', 'light');
+              document.body.classList.add('light-theme');
+              localStorage.setItem('theme', 'light');
+            } else {
+              document.documentElement.removeAttribute('data-theme');
+              document.body.classList.remove('light-theme');
+              localStorage.setItem('theme', 'dark');
+            }
+            updateBtnText();
+          }
+          window.toggleAppTheme = toggleAppTheme;
+
+          function updateBtnText() {
+            const btn = document.querySelector('#theme-toggle-btn');
+            if (btn) {
+              const isLight = document.documentElement.getAttribute('data-theme') === 'light' || document.body.classList.contains('light-theme');
+              btn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+            }
+          }
+
           function initThemeToggle() {
             const userMenu = document.querySelector('#header .user-menu');
             if (userMenu && !document.querySelector('#theme-toggle-btn')) {
               const btn = document.createElement('button');
               btn.id = 'theme-toggle-btn';
               btn.type = 'button';
-              const updateBtnText = () => {
-                const isLight = document.body.classList.contains('light-theme');
-                btn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-              };
-              updateBtnText();
+              btn.style.marginRight = '10px';
+              btn.style.cursor = 'pointer';
               btn.onclick = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (typeof window.toggleAppTheme === 'function') {
-                  window.toggleAppTheme();
-                } else {
-                  const isLight = document.body.classList.toggle('light-theme');
-                  if (isLight) {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('theme', 'light');
-                  } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('theme', 'dark');
-                  }
-                }
-                updateBtnText();
+                toggleAppTheme();
               };
               userMenu.insertBefore(btn, userMenu.firstChild);
+              updateBtnText();
             }
           }
+
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.body.classList.add('light-theme');
+          }
+
           const observer = new MutationObserver(initThemeToggle);
           observer.observe(document.body, { childList: true, subtree: true });
           document.addEventListener('DOMContentLoaded', initThemeToggle);
