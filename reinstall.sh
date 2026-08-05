@@ -296,19 +296,24 @@ install_multitab_and_restore() {
         echo -e "${YELLOW}-> Menginstal dependensi modul GenieACS Multitab...${NC}"
         (cd "$NODE_MODULES_DIR/genieacs" && npm install --omit=dev --force)
         
-        # Sinkronkan versi package.json secara dinamis sesuai versi yang diinstal
+        # Sinkronkan versi package.json & biner GenieACS secara dinamis sesuai versi yang diinstal
         if [ -n "$TARGET_VERSION" ]; then
-            echo -e "${YELLOW}-> Mengatur versi package.json secara dinamis ke v${TARGET_VERSION}...${NC}"
+            echo -e "${YELLOW}-> Mengatur versi biner & package.json secara dinamis ke v${TARGET_VERSION}...${NC}"
             node -e "
             try {
                 const fs = require('fs');
-                const p = '$NODE_MODULES_DIR/genieacs/package.json';
-                if (fs.existsSync(p)) {
-                    const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
-                    pkg.version = '$TARGET_VERSION';
-                    fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
-                    console.log('✅ Versi package.json otomatis disinkronkan ke v$TARGET_VERSION');
-                }
+                const path = require('path');
+                const targetDir = '$NODE_MODULES_DIR/genieacs';
+                const files = ['bin/genieacs-ui', 'bin/genieacs-cwmp', 'bin/genieacs-fs', 'bin/genieacs-nbi', 'public/app.js', 'package.json'];
+                files.forEach(f => {
+                    const p = path.join(targetDir, f);
+                    if (fs.existsSync(p)) {
+                        let str = fs.readFileSync(p, 'utf8');
+                        str = str.replace(/1\.2\.[0-9]+(\+[0-9]+)?/g, '$TARGET_VERSION');
+                        fs.writeFileSync(p, str);
+                    }
+                });
+                console.log('✅ Versi biner & UI GenieACS otomatis disinkronkan ke v$TARGET_VERSION');
             } catch(e){}
             " 2>/dev/null || true
         fi

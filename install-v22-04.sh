@@ -407,12 +407,17 @@ if [ -d "$SCRIPT_DIR/genieacs" ]; then
         node -e "
         try {
             const fs = require('fs');
-            const p = '$NODE_MODULES_DIR/genieacs/package.json';
-            if (fs.existsSync(p)) {
-                const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
-                pkg.version = '$TARGET_VERSION';
-                fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
-            }
+            const path = require('path');
+            const targetDir = '$NODE_MODULES_DIR/genieacs';
+            const files = ['bin/genieacs-ui', 'bin/genieacs-cwmp', 'bin/genieacs-fs', 'bin/genieacs-nbi', 'public/app.js', 'package.json'];
+            files.forEach(f => {
+                const p = path.join(targetDir, f);
+                if (fs.existsSync(p)) {
+                    let str = fs.readFileSync(p, 'utf8');
+                    str = str.replace(/1\.2\.[0-9]+(\+[0-9]+)?/g, '$TARGET_VERSION');
+                    fs.writeFileSync(p, str);
+                }
+            });
         } catch(e){}
         " 2>/dev/null || true
     fi
