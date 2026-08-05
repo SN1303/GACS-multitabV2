@@ -1,6 +1,6 @@
 /**
  * GenieACS Modern Single Page Application
- * Complete Multi-Feature Engine
+ * Complete Multi-Feature Engine & Full Device Inspector
  */
 
 (function () {
@@ -18,7 +18,8 @@
     provisions: [],
     faults: [],
     filters: { search: '', limit: 50, skip: 0 },
-    selectedDevice: null
+    selectedDevice: null,
+    activeDeviceTab: 'summary'
   };
 
   // --- Initialize Theme ---
@@ -290,25 +291,22 @@
     `;
   }
 
-  // --- 4. Device Details View ---
+  // --- 4. Full Featured Device Details View ---
   async function loadDeviceDetailData(id) {
     if (!id || id === 'undefined') return;
 
-    // First try loaded in-memory state
     let found = state.devices.find(d => d._id === id || d.id === id || (d._deviceId && d._deviceId._SerialNumber === id));
     if (found) {
       state.selectedDevice = found;
       return;
     }
 
-    // Try direct API GET endpoint
     let res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
       state.selectedDevice = await res.json();
       return;
     }
 
-    // Fallback: Query by _id or Serial Number
     const queryStr = JSON.stringify({ "$or": [{ "_id": id }, { "DeviceID.SerialNumber": id }] });
     res = await apiFetch(`/api/devices?query=${encodeURIComponent(queryStr)}`);
     if (res && res.ok) {
@@ -333,15 +331,31 @@
     const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
     const model = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
     const software = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.SoftwareVersion', 'Device.DeviceInfo.SoftwareVersion']);
+    const hardware = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.HardwareVersion', 'Device.DeviceInfo.HardwareVersion']);
+    const uptime = getParamVal(dev, ['InternetGatewayDevice.DeviceInfo.UpTime', 'Device.DeviceInfo.UpTime']);
+    
+    // Wi-Fi values
     const ssid = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID', 'Device.WiFi.SSID.1.SSID']);
     const pass = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase', 'Device.WiFi.AccessPoint.1.Security.KeyPassphrase']);
+    
+    // WAN values
+    const wanIp = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress', 'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress']);
+    const wanMac = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.MACAddress', 'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.MACAddress']);
+    const pppUser = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username']);
+
+    const tabs = [
+      { id: 'summary', label: '📊 Summary & Info' },
+      { id: 'wifi', label: '📶 Wi-Fi Settings' },
+      { id: 'wan', label: '🌐 WAN / PPPoE' },
+      { id: 'tree', label: '🌳 Parameter Tree' }
+    ];
 
     return `
       <div class="main-content fade-in">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <a href="#/devices" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">← Back to Devices List</a>
-            <h1 style="font-weight: 700; margin-top: 0.5rem; font-family: var(--font-mono);">Device: ${serial}</h1>
+            <h1 style="font-weight: 700; margin-top: 0.5rem; font-family: var(--font-mono);">Device Inspector: ${serial}</h1>
           </div>
           <div style="display: flex; gap: 0.5rem;">
             <button id="summon-device-btn" class="btn btn-primary">⚡ Summon / Refresh</button>
@@ -349,70 +363,129 @@
           </div>
         </div>
 
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <span class="metric-label">Manufacturer</span>
-            <span class="metric-value" style="font-size: 1.15rem;">${manufacturer}</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Product Model</span>
-            <span class="metric-value" style="font-size: 1.15rem;">${model}</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Software Version</span>
-            <span class="metric-value" style="font-size: 1.15rem;">${software}</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">WLAN SSID</span>
-            <span class="metric-value" style="font-size: 1.15rem; color: var(--accent-primary);">${ssid}</span>
-          </div>
+        <!-- Tab Bar -->
+        <div class="device-tabs">
+          ${tabs.map(tab => `
+            <div class="device-tab ${state.activeDeviceTab === tab.id ? 'active' : ''}" data-tab="${tab.id}">
+              ${tab.label}
+            </div>
+          `).join('')}
         </div>
 
-        <!-- Quick Wi-Fi & LAN Controller -->
-        <div class="card">
-          <div class="card-title">📶 Quick Wi-Fi Controller</div>
-          <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
-            <div>
-              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi SSID</label>
-              <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid !== 'N/A' ? ssid : ''}">
+        <!-- Tab 1: Summary -->
+        ${state.activeDeviceTab === 'summary' ? `
+          <div class="metrics-grid fade-in">
+            <div class="metric-card">
+              <span class="metric-label">Manufacturer</span>
+              <span class="metric-value" style="font-size: 1.15rem;">${manufacturer}</span>
             </div>
-            <div>
-              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi WPA Passphrase</label>
-              <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass !== 'N/A' ? pass : ''}">
+            <div class="metric-card">
+              <span class="metric-label">Product Model</span>
+              <span class="metric-value" style="font-size: 1.15rem;">${model}</span>
             </div>
-            <div style="display: flex; align-items: flex-end;">
-              <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Apply Wi-Fi Settings</button>
+            <div class="metric-card">
+              <span class="metric-label">Hardware Version</span>
+              <span class="metric-value" style="font-size: 1.15rem;">${hardware}</span>
             </div>
-          </form>
-        </div>
+            <div class="metric-card">
+              <span class="metric-label">Software Version</span>
+              <span class="metric-value" style="font-size: 1.15rem;">${software}</span>
+            </div>
+          </div>
 
-        <!-- TR-069 Parameter Tree Inspector -->
-        <div class="card">
-          <div class="card-title">
-            <span>🌳 TR-069 Parameter Tree</span>
-            <input type="text" id="param-filter-input" class="input-text" placeholder="Filter parameters..." style="font-size: 0.8rem; padding: 0.35rem 0.75rem; width: 220px;">
+          <div class="card fade-in">
+            <div class="card-title">Device Connection Summary</div>
+            <table class="table">
+              <tr>
+                <td style="font-weight: 600; width: 220px;">WAN IP Address</td>
+                <td style="font-family: var(--font-mono);">${wanIp}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">MAC Address</td>
+                <td style="font-family: var(--font-mono);">${wanMac}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">System Uptime (Seconds)</td>
+                <td style="font-family: var(--font-mono);">${uptime}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Current SSID</td>
+                <td style="color: var(--accent-primary); font-weight: 600;">${ssid}</td>
+              </tr>
+            </table>
           </div>
-          <div class="param-tree" id="param-tree-container">
-            ${Object.keys(dev).sort().map(key => {
-              const item = dev[key];
-              let val = 'N/A';
-              if (item && typeof item === 'object') {
-                if (item._value !== undefined) val = item._value;
-                else if (item.value && item.value[0] !== undefined) val = item.value[0];
-                else if (item._object) val = '[Object]';
-                else val = JSON.stringify(item);
-              } else {
-                val = String(item);
-              }
-              return `
-                <div class="param-row">
-                  <span class="param-name">${key}</span>
-                  <span class="param-val">${val}</span>
-                </div>
-              `;
-            }).join('')}
+        ` : ''}
+
+        <!-- Tab 2: Wi-Fi -->
+        ${state.activeDeviceTab === 'wifi' ? `
+          <div class="card fade-in">
+            <div class="card-title">📶 Wi-Fi / WLAN Settings</div>
+            <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
+              <div>
+                <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi SSID</label>
+                <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid !== 'N/A' ? ssid : ''}">
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">WPA Passphrase</label>
+                <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass !== 'N/A' ? pass : ''}">
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Save Wi-Fi Configuration</button>
+              </div>
+            </form>
           </div>
-        </div>
+        ` : ''}
+
+        <!-- Tab 3: WAN -->
+        ${state.activeDeviceTab === 'wan' ? `
+          <div class="card fade-in">
+            <div class="card-title">🌐 WAN & PPPoE Status</div>
+            <table class="table">
+              <tr>
+                <td style="font-weight: 600; width: 220px;">PPPoE Username</td>
+                <td style="font-family: var(--font-mono); color: var(--accent-primary); font-weight: 600;">${pppUser}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">External WAN IP</td>
+                <td style="font-family: var(--font-mono);">${wanIp}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">WAN MAC Address</td>
+                <td style="font-family: var(--font-mono);">${wanMac}</td>
+              </tr>
+            </table>
+          </div>
+        ` : ''}
+
+        <!-- Tab 4: Parameter Tree -->
+        ${state.activeDeviceTab === 'tree' ? `
+          <div class="card fade-in">
+            <div class="card-title">
+              <span>🌳 TR-069 Parameter Tree (${Object.keys(dev).length})</span>
+              <input type="text" id="param-filter-input" class="input-text" placeholder="Filter parameters..." style="font-size: 0.8rem; padding: 0.35rem 0.75rem; width: 220px;">
+            </div>
+            <div class="param-tree" id="param-tree-container">
+              ${Object.keys(dev).sort().map(key => {
+                const item = dev[key];
+                let val = 'N/A';
+                if (item && typeof item === 'object') {
+                  if (item._value !== undefined) val = item._value;
+                  else if (item.value && item.value[0] !== undefined) val = item.value[0];
+                  else if (item._object) val = '[Object]';
+                  else val = JSON.stringify(item);
+                } else {
+                  val = String(item);
+                }
+                return `
+                  <div class="param-row">
+                    <span class="param-name">${key}</span>
+                    <span class="param-val">${val}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
   }
@@ -625,6 +698,15 @@
         window.location.hash = '#/login';
       });
     }
+
+    // Device Tabs Switcher
+    const tabEls = document.querySelectorAll('.device-tab');
+    tabEls.forEach(tab => {
+      tab.addEventListener('click', () => {
+        state.activeDeviceTab = tab.getAttribute('data-tab');
+        renderApp();
+      });
+    });
 
     // Devices search
     const searchBtn = document.getElementById('device-search-btn');
