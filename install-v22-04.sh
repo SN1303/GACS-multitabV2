@@ -272,8 +272,22 @@ install_mongodb
 
 # GenieACS
 if ! systemctl is-active --quiet genieacs-{cwmp,fs,ui,nbi}; then
-    echo -e "${GREEN}================== Menginstall genieACS CWMP, FS, NBI, UI ==================${NC}"
-    npm install -g genieacs@1.2.13
+    echo -e "${YELLOW}-> Memeriksa versi terbaru dari GitHub (genieacs/genieacs)...${NC}"
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/genieacs/genieacs/releases/latest 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    if [ -z "$LATEST_VERSION" ]; then
+        LATEST_VERSION=$(npm view genieacs version 2>/dev/null || echo "1.2.13")
+    fi
+    echo -e "${GREEN}🔍 Versi default: v1.2.13 | Versi terbaru GitHub: v${LATEST_VERSION}${NC}"
+    TARGET_VERSION="1.2.13"
+    if [ "$LATEST_VERSION" != "1.2.13" ]; then
+        echo -e "${YELLOW}Apakah Anda ingin menginstal versi terbaru GenieACS (v${LATEST_VERSION})? (y/N - default 'n' = v1.2.13):${NC}"
+        read -t 15 update_choice || update_choice="n"
+        if [[ "$update_choice" =~ ^[Yy]$ ]]; then
+            TARGET_VERSION="$LATEST_VERSION"
+        fi
+    fi
+    echo -e "${YELLOW}-> Menginstal GenieACS v${TARGET_VERSION}...${NC}"
+    npm install -g "genieacs@${TARGET_VERSION}" --force
     
     # Pastikan biner genieacs dapat diakses dari /usr/bin
     BIN_DIR=$(dirname "$(which genieacs-cwmp 2>/dev/null || echo "/usr/bin/genieacs-cwmp")")
