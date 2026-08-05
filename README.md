@@ -6,43 +6,57 @@
 <img width="1358" height="650" alt="Image" src="https://github.com/user-attachments/assets/2d530df8-beb3-493e-ad04-8bafbc39ad3f" />
 
 ## Cara Penggunaan
+
 ```
 apt install git curl -y
 ```
+
 ```
 git clone https://github.com/alijayanet/multitab
 ```
+
 ```
 cd multitab
 ```
+
 ```
 chmod +x install-v22-04.sh && install-armbian.sh
 ```
+
 Ubuntu 20.04/22.04
+
 ```
 install-v22-04.sh
 ```
+
 ARMBIAN
+
 ```
 install-armbian.sh
 ```
+
 ```
 reboot
 ```
+
 ## kalau sudah ada genieacsnya
 
 ```
 cp -r genieacs /usr/lib/node_modules/
 ```
+
 ```
 mongorestore --db genieacs --drop db
 ```
+
 ```
 reboot
 ```
+
 ## Instalasi Menggunakan Docker (Direkomendasikan)
 
 ### Persyaratan
+
 - Docker Engine 20.10.0 atau lebih baru
 - Docker Compose 2.0.0 atau lebih baru
 - Minimal 2GB RAM (4GB direkomendasikan)
@@ -51,12 +65,14 @@ reboot
 ### Langkah-langkah Instalasi
 
 1. **Clone Repository**
+
    ```bash
-   git clone https://github.com/alijayanet/multitab.git
+   git clone https://github.com/SN1303/GACS-multitabV2.git
    cd multitab
    ```
 
 2. **Persiapan Direktori**
+
    ```bash
    mkdir -p db ext logs config
    chmod -R 777 db ext logs
@@ -73,10 +89,11 @@ reboot
      ```
 
 4. **Jalankan dengan Docker Compose**
+
    ```bash
    # Bangun dan jalankan container
    docker-compose up -d --build
-   
+
    # Pantau log
    docker-compose logs -f
    ```
@@ -130,6 +147,7 @@ GENIEACS_UI_INITIAL_PASSWORD=admin
 ### Menggunakan Docker Desktop
 
 #### Cara 1: Menggunakan Docker Dashboard (GUI)
+
 1. Buka Docker Desktop
 2. Klik tombol "Build" di sidebar kiri
 3. Pilih direktori proyek GenieACS
@@ -137,6 +155,7 @@ GENIEACS_UI_INITIAL_PASSWORD=admin
 5. Klik "Build"
 
 #### Cara 2: Menggunakan Terminal Docker Desktop
+
 1. Buka terminal di Docker Desktop (atau terminal biasa)
 2. Arahkan ke direktori proyek:
    ```bash
@@ -148,17 +167,20 @@ GENIEACS_UI_INITIAL_PASSWORD=admin
    ```
 
 #### Cara 3: Menggunakan Docker Compose (Direkomendasikan)
+
 1. Buka terminal di direktori proyek
 2. Jalankan perintah berikut untuk membangun dan menjalankan:
+
    ```bash
    # Build dan jalankan semua service
    docker-compose up -d --build
-   
+
    # Atau untuk service tertentu (contoh: hanya genieacs)
    docker-compose up -d --build genieacs
    ```
 
 #### Memeriksa Image yang Telah Dibangun
+
 ```bash
 # Melihat daftar image
 docker images
@@ -171,6 +193,7 @@ docker logs <container_id>
 ```
 
 #### Menjalankan Container dari Image yang Telah Dibangun
+
 ```bash
 # Menjalankan container
 docker run -d --name genieacs -p 3000:3000 -p 7547:7547 -p 7557:7557 -p 7567:7567 genieacs:latest
@@ -180,6 +203,7 @@ docker-compose up -d
 ```
 
 #### Troubleshooting
+
 - Jika build gagal, periksa log build:
   ```bash
   docker-compose logs --tail=100 -f
@@ -188,10 +212,7 @@ docker-compose up -d
 - Pastikan Docker Desktop sudah berjalan dengan baik (ikon Docker di system tray berwarna putih)
 
 ## Lisensi
- 2025 ALIJAYA ACS MULTITAB### SILAHKAN YANG INGIN BERBAGI
+
+2025 ALIJAYA ACS MULTITAB### SILAHKAN YANG INGIN BERBAGI
 
 ![Image](https://github.com/user-attachments/assets/724e5ac2-626e-4f2d-bd1f-1265b70b544f)
-
-
-
-
