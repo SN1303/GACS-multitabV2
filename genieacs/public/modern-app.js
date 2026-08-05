@@ -238,7 +238,7 @@
         </div>
 
         <div class="search-bar">
-          <input type="text" id="device-search-input" class="input-text" placeholder="Search by PPPoE User, IP, SSID, Serial Number, MAC, Product Class..." value="${state.filters.search}">
+          <input type="text" id="device-search-input" class="input-text" placeholder="Search by PPPoE User, IP, SSID, Product Class, Serial Number, MAC..." value="${state.filters.search}">
           <button id="device-search-btn" class="btn btn-primary">Search</button>
         </div>
 
@@ -250,8 +250,8 @@
                 <th>PPPoE User</th>
                 <th>IP Address</th>
                 <th>SSID</th>
-                <th>Device ID / Serial</th>
                 <th>Product Class</th>
+                <th>Device ID / Serial</th>
                 <th>MAC Address</th>
                 <th>Last Inform</th>
                 <th>Action</th>
@@ -303,8 +303,8 @@
                     <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${pppUser}</td>
                     <td style="font-family: var(--font-mono);">${ip !== 'N/A' ? `<a href="http://${ip}" target="_blank" style="color: var(--accent-primary);">${ip}</a>` : 'N/A'}</td>
                     <td style="color: var(--accent-primary); font-weight: 500;">${ssid}</td>
-                    <td style="font-weight: 600; font-family: var(--font-mono);">${serial}</td>
                     <td>${product}</td>
+                    <td style="font-weight: 600; font-family: var(--font-mono);">${serial}</td>
                     <td style="font-family: var(--font-mono);">${mac}</td>
                     <td style="color: var(--text-secondary); font-size: 0.8rem;">${lastInform}</td>
                     <td>
