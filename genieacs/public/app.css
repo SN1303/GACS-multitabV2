@@ -1030,9 +1030,9 @@ body {
     position: relative;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
     padding: 2px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
 }
 
 #header>.drawer-wrapper {
