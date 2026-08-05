@@ -745,20 +745,20 @@ span.CodeMirror-selectedtext {
 
 /* Light Mode Overrides */
 html[data-theme="light"], body.light-theme {
-    --bg-main: #F3F4F6;
-    --bg-grid: rgba(209, 213, 219, 0.5);
+    --bg-main: #F1F5F9;
+    --bg-grid: rgba(148, 163, 184, 0.25);
     --bg-card: #FFFFFF;
-    --bg-header: #1E293B;
+    --bg-header: #FFFFFF;
     --accent-cyan: #0284C7;
-    --accent-emerald: #10B981;
+    --accent-emerald: #059669;
     --accent-blue: #2563EB;
     --accent-purple: #7C3AED;
     --accent-amber: #D97706;
     --accent-red: #DC2626;
     --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #94A3B8;
-    --border-color: #E2E8F0;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    --border-color: #CBD5E1;
     --border-highlight: #0284C7;
     --color1: #F8FAFC;
     --color2: #475569;
@@ -768,8 +768,113 @@ html[data-theme="light"], body.light-theme {
     --color6: #0F172A;
     --color7: #0284C7;
     --color8: #FFFFFF;
-    --disabled: #CBD5E1
+    --disabled: #94A3B8;
 }
+
+html[data-theme="light"] #header, body.light-theme #header {
+    background: #FFFFFF;
+    border-bottom: 2px solid var(--accent-cyan);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] #header>nav>ul>li.active, body.light-theme #header>nav>ul>li.active {
+    background: #E0F2FE;
+    border: 1px solid var(--accent-cyan);
+    box-shadow: none;
+}
+
+html[data-theme="light"] #side-menu, body.light-theme #side-menu {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] #side-menu>ul>li>a:hover, body.light-theme #side-menu>ul>li>a:hover {
+    background: #F1F5F9;
+    color: #0F172A;
+}
+
+html[data-theme="light"] #side-menu>ul>li.active>a, body.light-theme #side-menu>ul>li.active>a {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+
+html[data-theme="light"] #content, body.light-theme #content {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] table.table th, body.light-theme table.table th {
+    background: #F1F5F9;
+    color: #0369A1;
+    border-bottom: 2px solid #CBD5E1;
+}
+
+html[data-theme="light"] table.table.highlight>tbody>tr:hover, body.light-theme table.table.highlight>tbody>tr:hover {
+    background-color: #F0F9FF;
+}
+
+html[data-theme="light"] input[type=button], html[data-theme="light"] button, body.light-theme input[type=button], body.light-theme button {
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+    color: #0F172A;
+}
+
+html[data-theme="light"] :is(input[type=button], button).primary, body.light-theme :is(input[type=button], button).primary {
+    background: #0284C7;
+    border-color: #0284C7;
+    color: #FFFFFF;
+    box-shadow: none;
+}
+
+html[data-theme="light"] :is(input[type=button], button).primary:hover:enabled, body.light-theme :is(input[type=button], button).primary:hover:enabled {
+    background: #0369A1;
+    color: #FFFFFF;
+}
+
+html[data-theme="light"] .CodeMirror, html[data-theme="light"] textarea, html[data-theme="light"] select, html[data-theme="light"] input,
+body.light-theme .CodeMirror, body.light-theme textarea, body.light-theme select, body.light-theme input {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    border-color: #CBD5E1;
+}
+
+html[data-theme="light"] .all-parameters>.parameter-list, body.light-theme .all-parameters>.parameter-list {
+    background-color: #FFFFFF;
+}
+
+html[data-theme="light"] div.tab>div.tab_content, body.light-theme div.tab>div.tab_content {
+    background: #FFFFFF;
+    border-top: 1px solid var(--accent-cyan);
+}
+
+html[data-theme="light"] div.tab>ul>li, body.light-theme div.tab>ul>li {
+    background-color: #F1F5F9;
+    border-color: #CBD5E1;
+}
+
+html[data-theme="light"] div.tab>ul>li:is(.active, :hover), body.light-theme div.tab>ul>li:is(.active, :hover) {
+    background: #FFFFFF;
+    border-color: var(--accent-cyan);
+}
+
+html[data-theme="light"] .overlay-wrapper>.overlay, body.light-theme .overlay-wrapper>.overlay {
+    background-color: #FFFFFF;
+    color: #0F172A;
+}
+
+html[data-theme="light"] .autocomplete, body.light-theme .autocomplete {
+    background-color: #FFFFFF;
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] #header>.drawer-wrapper>.drawer, body.light-theme #header>.drawer-wrapper>.drawer {
+    background-color: #FFFFFF;
+    color: #0F172A;
+}
+
 
 /* Theme Toggle Button Styling */
 #theme-toggle-btn {
