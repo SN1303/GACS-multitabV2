@@ -295,22 +295,26 @@
   async function loadDeviceDetailData(id) {
     if (!id || id === 'undefined') return;
 
-    if (state.selectedDevice && (state.selectedDevice._id === id || state.selectedDevice.id === id)) {
-      return;
+    // Reset selected device if switching to a different device ID
+    if (!state.selectedDevice || (state.selectedDevice._id !== id && state.selectedDevice.id !== id)) {
+      state.selectedDevice = null;
     }
 
+    // 1. Try finding in loaded devices list
     let found = state.devices.find(d => d._id === id || d.id === id || (d._deviceId && d._deviceId._SerialNumber === id));
     if (found) {
       state.selectedDevice = found;
       return;
     }
 
+    // 2. Fetch directly from GET /api/devices/:id
     let res = await apiFetch(`/api/devices/${encodeURIComponent(id)}`);
     if (res && res.ok) {
       state.selectedDevice = await res.json();
       return;
     }
 
+    // 3. Fallback mongo query lookup
     const queryStr = JSON.stringify({ "$or": [{ "_id": id }, { "DeviceID.SerialNumber": id }] });
     res = await apiFetch(`/api/devices?query=${encodeURIComponent(queryStr)}`);
     if (res && res.ok) {
