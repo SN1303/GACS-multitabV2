@@ -14,6 +14,7 @@ public/dist/
 
 # Backup & Original Folders
 genieacs-multitab-ori/
+genieacs-master/
 
 # Database & Runtime Snapshots
 db/*.sqlite
