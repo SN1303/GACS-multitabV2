@@ -710,7 +710,10 @@ span.CodeMirror-selectedtext {
 :root {
     --base-font-size: 13px;
     --base-line-height: 1.45;
+    
+    /* Default Dark Mode Theme */
     --bg-main: #06090E;
+    --bg-grid: rgba(48, 54, 61, 0.25);
     --bg-card: #0D1117;
     --bg-header: #161B22;
     --accent-cyan: #00F0FF;
@@ -738,6 +741,64 @@ span.CodeMirror-selectedtext {
     --status-green: 152 100% 50%;
     --status-gray: 215 14% 45%;
     --status-yellow: 43 100% 50%
+}
+
+/* Light Mode Overrides */
+html[data-theme="light"], body.light-theme {
+    --bg-main: #F3F4F6;
+    --bg-grid: rgba(209, 213, 219, 0.5);
+    --bg-card: #FFFFFF;
+    --bg-header: #1E293B;
+    --accent-cyan: #0284C7;
+    --accent-emerald: #10B981;
+    --accent-blue: #2563EB;
+    --accent-purple: #7C3AED;
+    --accent-amber: #D97706;
+    --accent-red: #DC2626;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border-color: #E2E8F0;
+    --border-highlight: #0284C7;
+    --color1: #F8FAFC;
+    --color2: #475569;
+    --color3: #FFFFFF;
+    --color4: #0284C7;
+    --color5: #F1F5F9;
+    --color6: #0F172A;
+    --color7: #0284C7;
+    --color8: #FFFFFF;
+    --disabled: #CBD5E1
+}
+
+/* Theme Toggle Button Styling */
+#theme-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: var(--bg-header);
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--fade)
+}
+
+#theme-toggle-btn:hover {
+    background: var(--accent-cyan);
+    color: var(--bg-main);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5)
 }
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -803,8 +864,8 @@ body {
     display: flex;
     background-color: var(--bg-main);
     background-image: 
-        linear-gradient(rgba(48, 54, 61, 0.25) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(48, 54, 61, 0.25) 1px, transparent 1px);
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
     background-size: 30px 30px;
     flex-direction: column;
     color: var(--text-primary);
@@ -1705,11 +1766,35 @@ div.tab>ul>li.active>:is(a, a:visited, a:hover) {
     font-weight: 700
 }
 
+/* Dynamic Theme Toggle Widget Styles */
+#theme-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+}
 
-/*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
-/*# sourceMappingURL=app.css.map */
+#theme-toggle-btn:hover {
+    background: var(--accent-cyan);
+    color: var(--bg-main);
+    box-shadow: 0 0 15px var(--accent-cyan);
+}
 
-
-
-/*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /*# sourceMappingURL=app.css.map */
