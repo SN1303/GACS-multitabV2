@@ -92,6 +92,9 @@ install_nodejs() {
     echo -e "${YELLOW}📦 2. MENGINSTAL NODE.JS 20...${NC}"
     echo -e "${BLUE}============================================================================${NC}"
 
+    # Hapus repo apt invalid jika ada
+    rm -f /etc/apt/sources.list.d/mongodb-org-7.0.list
+
     apt-get update -y
     apt-get install -y --no-install-recommends ca-certificates curl gnupg lsb-release ufw
 
@@ -123,16 +126,14 @@ install_mongodb() {
     echo -e "${YELLOW}🍃 3. MENGINSTAL MONGODB & DATABASE TOOLS...${NC}"
     echo -e "${BLUE}============================================================================${NC}"
 
+    # Hapus repo 7.0 yang invalid jika pernah dibuat
+    rm -f /etc/apt/sources.list.d/mongodb-org-7.0.list
+
     if [[ "$UBUNTU_CODENAME" == "focal" ]]; then
         curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-4.4.gpg 2>/dev/null || true
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         apt-get update -y
         apt-get install -y mongodb-org mongodb-org-tools mongodb-database-tools 2>/dev/null || apt-get install -y mongodb-org
-    elif [[ "$UBUNTU_CODENAME" == "noble" ]]; then
-        curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg 2>/dev/null || true
-        echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-        apt-get update -y
-        apt-get install -y mongodb-org mongodb-database-tools 2>/dev/null || apt-get install -y mongodb-org
     else
         curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg 2>/dev/null || true
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
@@ -294,6 +295,24 @@ install_multitab_and_restore() {
         
         echo -e "${YELLOW}-> Menginstal dependensi modul GenieACS Multitab...${NC}"
         (cd "$NODE_MODULES_DIR/genieacs" && npm install --omit=dev --force)
+        
+        # Sinkronkan versi package.json secara dinamis sesuai versi yang diinstal
+        if [ -n "$TARGET_VERSION" ]; then
+            echo -e "${YELLOW}-> Mengatur versi package.json secara dinamis ke v${TARGET_VERSION}...${NC}"
+            node -e "
+            try {
+                const fs = require('fs');
+                const p = '$NODE_MODULES_DIR/genieacs/package.json';
+                if (fs.existsSync(p)) {
+                    const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+                    pkg.version = '$TARGET_VERSION';
+                    fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
+                    console.log('✅ Versi package.json otomatis disinkronkan ke v$TARGET_VERSION');
+                }
+            } catch(e){}
+            " 2>/dev/null || true
+        fi
+
         echo -e "${GREEN}✅ Multitab module & dependensi terinstal di $NODE_MODULES_DIR/genieacs${NC}"
     else
         echo -e "${RED}⚠️ Direktori '$SCRIPT_DIR/genieacs' tidak ditemukan!${NC}"

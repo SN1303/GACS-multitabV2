@@ -401,6 +401,21 @@ NODE_MODULES_DIR=$(npm root -g 2>/dev/null || echo "/usr/lib/node_modules")
 if [ -d "$SCRIPT_DIR/genieacs" ]; then
     echo -e "${YELLOW}Meng-copy modul GenieACS Multitab...${NC}"
     cp -r "$SCRIPT_DIR/genieacs" "$NODE_MODULES_DIR/"
+    (cd "$NODE_MODULES_DIR/genieacs" && npm install --omit=dev --force 2>/dev/null || true)
+    
+    if [ -n "$TARGET_VERSION" ]; then
+        node -e "
+        try {
+            const fs = require('fs');
+            const p = '$NODE_MODULES_DIR/genieacs/package.json';
+            if (fs.existsSync(p)) {
+                const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+                pkg.version = '$TARGET_VERSION';
+                fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
+            }
+        } catch(e){}
+        " 2>/dev/null || true
+    fi
     echo -e "${GREEN}✅ Multitab berhasil di-copy ke $NODE_MODULES_DIR/genieacs${NC}"
 else
     echo -e "${RED}⚠️  Direktori '$SCRIPT_DIR/genieacs' tidak ditemukan!${NC}"
