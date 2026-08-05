@@ -416,6 +416,6 @@ systemctl restart genieacs-{cwmp,fs,ui,nbi}
 
 # Sukses
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}============ GACS UI akses port 3000 : http://$local_ip:3000 ===============${NC}"
+echo -e "${GREEN}============ GACS UI akses port 3000 : http://$local_ip:3000 ==============${NC}"
 echo -e "${GREEN}=================== Informasi: Whatsapp 081234567890 =======================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
