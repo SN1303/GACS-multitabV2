@@ -19,7 +19,7 @@ UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "Unknown")
 ARCH=$(uname -m)
 
 echo -e "${GREEN}============================================================================${NC}"
-echo -e "${GREEN}================== INSTALASI GACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ==================${NC}"
+echo -e "${GREEN}==================  INSTALASI GACS - UBUNTU ${UBUNTU_VERSION} (${UBUNTU_CODENAME}) ==================${NC}"
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}==================  KKK   KKK   NNNN    NNN   SSSSSSSSSS  ==================${NC}"
 echo -e "${GREEN}==================  KKK  KKK    NNNNN   NNN   SS          ==================${NC}"
