@@ -238,7 +238,7 @@
         </div>
 
         <div class="search-bar">
-          <input type="text" id="device-search-input" class="input-text" placeholder="Search by Serial Number, IP, MAC, Product Class..." value="${state.filters.search}">
+          <input type="text" id="device-search-input" class="input-text" placeholder="Search by Serial Number, IP, MAC, SSID, Product Class..." value="${state.filters.search}">
           <button id="device-search-btn" class="btn btn-primary">Search</button>
         </div>
 
@@ -248,7 +248,9 @@
               <tr>
                 <th>Status</th>
                 <th>Device ID / Serial</th>
+                <th>Manufacturer</th>
                 <th>Product Class</th>
+                <th>SSID</th>
                 <th>IP Address</th>
                 <th>MAC Address</th>
                 <th>Last Inform</th>
@@ -258,33 +260,46 @@
             <tbody>
               ${state.devices.length === 0 ? `
                 <tr>
-                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
+                  <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No devices found in database. Click 'Refresh List' to retry.</td>
                 </tr>
               ` : state.devices.map(dev => {
                 const devId = getDeviceId(dev);
                 const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) !== 'N/A' ? getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']) : devId;
+                const manufacturer = getParamVal(dev, ['DeviceID.Manufacturer', '_deviceId._Manufacturer']);
                 const product = getParamVal(dev, ['DeviceID.ProductClass', '_deviceId._ProductClass']);
+                const ssid = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID', 'Device.WiFi.SSID.1.SSID']);
                 const ip = getParamVal(dev, [
+                  'VirtualParameters.pppIP',
                   'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ExternalIPAddress',
+                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress',
                   'Device.IP.Interface.1.IPv4Address.1.IPAddress'
                 ]);
                 const mac = getParamVal(dev, [
+                  'VirtualParameters.MacAddress',
                   'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.MACAddress',
+                  'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.MACAddress',
                   'Device.Ethernet.Interface.1.MACAddress'
                 ]);
                 const lastInformRaw = dev._lastInform || getParamVal(dev, 'Events.Inform');
+                let isOnline = false;
+                if (lastInformRaw && lastInformRaw !== 'N/A') {
+                  const diffMinutes = (Date.now() - new Date(lastInformRaw).getTime()) / (1000 * 60);
+                  if (diffMinutes < 15) isOnline = true;
+                }
                 const lastInform = lastInformRaw && lastInformRaw !== 'N/A' ? new Date(lastInformRaw).toLocaleString() : 'N/A';
 
                 return `
                   <tr>
                     <td>
-                      <span class="badge badge-online">
-                        <span class="dot dot-online"></span> Online
+                      <span class="badge ${isOnline ? 'badge-online' : 'badge-offline'}">
+                        <span class="dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span> ${isOnline ? 'Online' : 'Offline'}
                       </span>
                     </td>
                     <td style="font-weight: 600; font-family: var(--font-mono);">${serial}</td>
+                    <td>${manufacturer}</td>
                     <td>${product}</td>
-                    <td style="font-family: var(--font-mono);">${ip}</td>
+                    <td style="color: var(--accent-primary); font-weight: 500;">${ssid}</td>
+                    <td style="font-family: var(--font-mono);">${ip !== 'N/A' ? `<a href="http://${ip}" target="_blank" style="color: var(--accent-primary);">${ip}</a>` : 'N/A'}</td>
                     <td style="font-family: var(--font-mono);">${mac}</td>
                     <td style="color: var(--text-secondary); font-size: 0.8rem;">${lastInform}</td>
                     <td>
