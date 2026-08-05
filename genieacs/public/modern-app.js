@@ -361,9 +361,14 @@
     const pppUser = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username']);
 
     const tabs = [
-      { id: 'summary', label: '📊 Summary & Info' },
-      { id: 'wifi', label: '📶 Wi-Fi Settings' },
-      { id: 'wan', label: '🌐 WAN / PPPoE' },
+      { id: 'summary', label: '📊 Summary' },
+      { id: 'wan', label: '🌐 WAN Config' },
+      { id: 'wifi', label: '📶 WLAN / Wi-Fi' },
+      { id: 'lan', label: '🔌 LAN Config' },
+      { id: 'portforwarding', label: '🔀 Port Forwarding' },
+      { id: 'voip', label: '📞 VOIP' },
+      { id: 'admin', label: '🔐 Admin Credentials' },
+      { id: 'tr069', label: '⚙️ TR-069' },
       { id: 'tree', label: '🌳 Parameter Tree' }
     ];
 
@@ -381,7 +386,7 @@
         </div>
 
         <!-- Tab Bar -->
-        <div class="device-tabs">
+        <div class="device-tabs" style="overflow-x: auto; white-space: nowrap;">
           ${tabs.map(tab => `
             <div class="device-tab ${state.activeDeviceTab === tab.id ? 'active' : ''}" data-tab="${tab.id}">
               ${tab.label}
@@ -400,6 +405,10 @@
     const { dev, manufacturer, model, hardware, software, uptime, wanIp, wanMac, ssid, pass, pppUser } = data;
 
     if (tabId === 'summary') {
+      const serial = getParamVal(dev, ['DeviceID.SerialNumber', '_deviceId._SerialNumber']);
+      const oui = getParamVal(dev, ['DeviceID.OUI', '_deviceId._OUI']);
+      const lastInform = dev._lastInform || getParamVal(dev, 'Events.Inform');
+      
       return `
         <div class="metrics-grid fade-in">
           <div class="metric-card">
@@ -421,22 +430,34 @@
         </div>
 
         <div class="card fade-in">
-          <div class="card-title">Device Connection Summary</div>
+          <div class="card-title">Device Connection & Identity Summary</div>
           <table class="table">
             <tr>
-              <td style="font-weight: 600; width: 220px;">WAN IP Address</td>
-              <td style="font-family: var(--font-mono);">${wanIp}</td>
+              <td style="font-weight: 600; width: 220px;">Serial Number</td>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${serial}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">OUI</td>
+              <td style="font-family: var(--font-mono);">${oui}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Last Inform Time</td>
+              <td style="color: var(--text-secondary);">${lastInform !== 'N/A' ? new Date(lastInform).toLocaleString() : 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">WAN IP Address</td>
+              <td style="font-family: var(--font-mono);">${wanIp !== 'N/A' ? `<a href="http://${wanIp}" target="_blank" style="color: var(--accent-primary);">${wanIp}</a>` : 'N/A'}</td>
             </tr>
             <tr>
               <td style="font-weight: 600;">MAC Address</td>
               <td style="font-family: var(--font-mono);">${wanMac}</td>
             </tr>
             <tr>
-              <td style="font-weight: 600;">System Uptime (Seconds)</td>
-              <td style="font-family: var(--font-mono);">${uptime}</td>
+              <td style="font-weight: 600;">System Uptime</td>
+              <td style="font-family: var(--font-mono);">${uptime !== 'N/A' ? `${uptime} seconds` : 'N/A'}</td>
             </tr>
             <tr>
-              <td style="font-weight: 600;">Current SSID</td>
+              <td style="font-weight: 600;">Active SSID</td>
               <td style="color: var(--accent-primary); font-weight: 600;">${ssid}</td>
             </tr>
           </table>
@@ -444,43 +465,298 @@
       `;
     }
 
-    if (tabId === 'wifi') {
+    if (tabId === 'wan') {
+      // General WAN Connection extraction logic for multi-vendor (Huawei, ZTE, FiberHome, CTCOM, CMCC)
+      const pppPass = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Password', 'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1.Password']);
+      const vlan = getParamVal(dev, [
+        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.X_ZTE-COM_VLANID',
+        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.X_HW_VLAN',
+        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.VLANID',
+        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.X_CT-COM_WANGponLinkConfig.VLANIDMark',
+        'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.X_CMCC_VLANIDMark'
+      ]);
+      const connStatus = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ConnectionStatus', 'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ConnectionStatus']);
+      const connType = getParamVal(dev, ['InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ConnectionType', 'InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1.ConnectionType']);
+
       return `
         <div class="card fade-in">
-          <div class="card-title">📶 Wi-Fi / WLAN Settings</div>
-          <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
-            <div>
-              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">Wi-Fi SSID</label>
-              <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid !== 'N/A' ? ssid : ''}">
+          <div class="card-title">
+            <span>🌐 WAN Connections & Configuration</span>
+            <a href="https://pastebin.com/raw/jTiUfQW2" target="_blank" class="btn btn-secondary" style="font-size: 0.75rem;">📖 Petunjuk Pengisian Config WAN</a>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Current Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600;">PPPoE / WAN Username</td>
+                <td style="font-family: var(--font-mono); color: var(--accent-primary); font-weight: 600;">${pppUser}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">PPPoE Password</td>
+                <td style="font-family: var(--font-mono);">${pppPass}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">VLAN ID</td>
+                <td style="font-family: var(--font-mono); font-weight: 600;">${vlan}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Connection Status</td>
+                <td>
+                  <span class="badge ${connStatus.toLowerCase() === 'connected' ? 'badge-online' : 'badge-offline'}">
+                    ${connStatus}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Connection Type</td>
+                <td>${connType}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">External IP Address</td>
+                <td style="font-family: var(--font-mono);">${wanIp}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">WAN MAC Address</td>
+                <td style="font-family: var(--font-mono);">${wanMac}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    if (tabId === 'wifi') {
+      const ssid2 = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.2.SSID', 'Device.WiFi.SSID.2.SSID']);
+      const pass2 = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.2.KeyPassphrase', 'Device.WiFi.AccessPoint.2.Security.KeyPassphrase']);
+      const wifiEnable = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.Enable', 'Device.WiFi.SSID.1.Enable']);
+
+      return `
+        <div class="card fade-in">
+          <div class="card-title">📶 WLAN / Wi-Fi Configuration</div>
+          <form id="wifi-config-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1rem;">
+            <div style="grid-column: 1 / -1; background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <h4 style="margin-bottom: 0.75rem; color: var(--accent-primary);">SSID 1 (2.4 GHz Primary)</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div>
+                  <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">SSID Name</label>
+                  <input type="text" id="wifi-ssid-input" class="input-text" style="width: 100%;" value="${ssid !== 'N/A' ? ssid : ''}">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">WPA Passphrase</label>
+                  <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass !== 'N/A' ? pass : ''}">
+                </div>
+              </div>
             </div>
-            <div>
-              <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">WPA Passphrase</label>
-              <input type="text" id="wifi-pass-input" class="input-text" style="width: 100%;" value="${pass !== 'N/A' ? pass : ''}">
-            </div>
-            <div style="display: flex; align-items: flex-end;">
-              <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Save Wi-Fi Configuration</button>
+
+            ${ssid2 !== 'N/A' ? `
+              <div style="grid-column: 1 / -1; background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 0.75rem; color: var(--accent-primary);">SSID 2 (Secondary / 5 GHz)</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                  <div>
+                    <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">SSID Name</label>
+                    <input type="text" id="wifi-ssid2-input" class="input-text" style="width: 100%;" value="${ssid2}">
+                  </div>
+                  <div>
+                    <label style="display: block; margin-bottom: 0.35rem; color: var(--text-secondary);">WPA Passphrase</label>
+                    <input type="text" id="wifi-pass2-input" class="input-text" style="width: 100%;" value="${pass2 !== 'N/A' ? pass2 : ''}">
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            <div style="grid-column: 1 / -1;">
+              <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Save Wi-Fi Settings to CPE</button>
             </div>
           </form>
         </div>
       `;
     }
 
-    if (tabId === 'wan') {
+    if (tabId === 'lan') {
+      const lanIp = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.IPInterface.1.IPAddress', 'Device.IP.Interface.1.IPv4Address.1.IPAddress']);
+      const subnet = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.IPInterface.1.SubnetMask', 'Device.IP.Interface.1.IPv4Address.1.SubnetMask']);
+      const dhcpEnable = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.DHCPServerEnable']);
+      const dhcpMin = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MinAddress']);
+      const dhcpMax = getParamVal(dev, ['InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MaxAddress']);
+
       return `
         <div class="card fade-in">
-          <div class="card-title">🌐 WAN & PPPoE Status</div>
+          <div class="card-title">🔌 LAN & DHCP Network Settings</div>
           <table class="table">
             <tr>
-              <td style="font-weight: 600; width: 220px;">PPPoE Username</td>
-              <td style="font-family: var(--font-mono); color: var(--accent-primary); font-weight: 600;">${pppUser}</td>
+              <td style="font-weight: 600; width: 220px;">LAN Gateway IP</td>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${lanIp}</td>
             </tr>
             <tr>
-              <td style="font-weight: 600;">External WAN IP</td>
-              <td style="font-family: var(--font-mono);">${wanIp}</td>
+              <td style="font-weight: 600;">Subnet Mask</td>
+              <td style="font-family: var(--font-mono);">${subnet}</td>
             </tr>
             <tr>
-              <td style="font-weight: 600;">WAN MAC Address</td>
-              <td style="font-family: var(--font-mono);">${wanMac}</td>
+              <td style="font-weight: 600;">DHCP Server Status</td>
+              <td><span class="badge ${dhcpEnable === true || dhcpEnable === 'true' ? 'badge-online' : 'badge-offline'}">${dhcpEnable}</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">DHCP Pool Range</td>
+              <td style="font-family: var(--font-mono);">${dhcpMin} - ${dhcpMax}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+    }
+
+    if (tabId === 'portforwarding') {
+      return `
+        <div class="card fade-in">
+          <div class="card-title">🔀 Port Forwarding / NAT Rules</div>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">Configured port forwarding rules on gateway:</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Rule Name / Enable</th>
+                <th>Protocol</th>
+                <th>External Port</th>
+                <th>Internal IP</th>
+                <th>Internal Port</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No active port forwarding rules configured.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    if (tabId === 'voip') {
+      const sipServer = getParamVal(dev, ['InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.SIP.ProxyServer']);
+      const sipUser = getParamVal(dev, ['InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.SIP.AuthUserName']);
+      const voipStatus = getParamVal(dev, ['InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.Status']);
+
+      return `
+        <div class="card fade-in">
+          <div class="card-title">📞 VOIP / SIP Line Information</div>
+          <table class="table">
+            <tr>
+              <td style="font-weight: 600; width: 220px;">SIP Proxy Server</td>
+              <td style="font-family: var(--font-mono);">${sipServer}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">SIP Username</td>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${sipUser}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Line Status</td>
+              <td>${voipStatus}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+    }
+
+    if (tabId === 'admin') {
+      // Extract Admin Credentials across ZTE, Huawei, FiberHome, ZIONCOM, CMCC, CU
+      const zteAdmin = getParamVal(dev, [
+        'InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.AdminName',
+        'InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.AdminName',
+        'InternetGatewayDevice.User.1.Username',
+        'InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalAdminName'
+      ]);
+      const zteAdminPass = getParamVal(dev, [
+        'InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.AdminPassword',
+        'InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.AdminPassword',
+        'InternetGatewayDevice.DeviceInfo.X_ZTE-COM_AdminAccount.Password',
+        'InternetGatewayDevice.User.1.Password',
+        'InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalAdminPassword'
+      ]);
+      const zteUser = getParamVal(dev, [
+        'InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.UserName',
+        'InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.UserName',
+        'InternetGatewayDevice.User.2.Username',
+        'InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalUserName'
+      ]);
+      const zteUserPass = getParamVal(dev, [
+        'InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.UserPassword',
+        'InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.UserPassword',
+        'InternetGatewayDevice.User.2.Password',
+        'InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalUserPassword'
+      ]);
+
+      const hwUser = getParamVal(dev, ['InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.1.UserName']);
+      const hwUserPass = getParamVal(dev, ['InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.1.Password']);
+      const hwSuper = getParamVal(dev, ['InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.2.UserName']);
+      const hwSuperPass = getParamVal(dev, ['InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.2.Password']);
+
+      return `
+        <div class="card fade-in">
+          <div class="card-title">🔐 Web Admin & User Credentials</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Account Type</th>
+                <th>Username</th>
+                <th>Password</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600; color: var(--accent-warning);">SuperAdmin / Admin Account</td>
+                <td style="font-family: var(--font-mono); font-weight: 600; color: var(--accent-primary);">${zteAdmin !== 'N/A' ? zteAdmin : (hwSuper !== 'N/A' ? hwSuper : 'telecomadmin')}</td>
+                <td style="font-family: var(--font-mono); font-weight: 600;">${zteAdminPass !== 'N/A' ? zteAdminPass : (hwSuperPass !== 'N/A' ? hwSuperPass : 'admintelecom')}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600; color: var(--text-secondary);">User / Customer Account</td>
+                <td style="font-family: var(--font-mono);">${zteUser !== 'N/A' ? zteUser : (hwUser !== 'N/A' ? hwUser : 'user')}</td>
+                <td style="font-family: var(--font-mono);">${zteUserPass !== 'N/A' ? zteUserPass : (hwUserPass !== 'N/A' ? hwUserPass : 'user')}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    if (tabId === 'tr069') {
+      const acsUrl = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.URL', 'Device.ManagementServer.URL']);
+      const acsUser = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.Username', 'Device.ManagementServer.Username']);
+      const acsPass = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.Password', 'Device.ManagementServer.Password']);
+      const informEnable = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.EnableCWMP', 'InternetGatewayDevice.ManagementServer.InformParameter']);
+      const informInterval = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.PeriodicInformInterval', 'Device.ManagementServer.PeriodicInformInterval']);
+      const connReqUser = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.ConnectionRequestUsername', 'Device.ManagementServer.ConnectionRequestUsername']);
+      const connReqPass = getParamVal(dev, ['InternetGatewayDevice.ManagementServer.ConnectionRequestPassword', 'Device.ManagementServer.ConnectionRequestPassword']);
+
+      return `
+        <div class="card fade-in">
+          <div class="card-title">⚙️ TR-069 CWMP Management Server Settings</div>
+          <table class="table">
+            <tr>
+              <td style="font-weight: 600; width: 240px;">ACS Management URL</td>
+              <td style="font-family: var(--font-mono); color: var(--accent-primary); font-weight: 600;">${acsUrl}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">ACS Username</td>
+              <td style="font-family: var(--font-mono);">${acsUser}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">ACS Password</td>
+              <td style="font-family: var(--font-mono);">${acsPass}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Periodic Inform Interval</td>
+              <td style="font-family: var(--font-mono);">${informInterval} seconds</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Connection Request Username</td>
+              <td style="font-family: var(--font-mono);">${connReqUser}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600;">Connection Request Password</td>
+              <td style="font-family: var(--font-mono);">${connReqPass}</td>
             </tr>
           </table>
         </div>
