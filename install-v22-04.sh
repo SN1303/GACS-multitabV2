@@ -280,8 +280,8 @@ if ! systemctl is-active --quiet genieacs-{cwmp,fs,ui,nbi}; then
     echo -e "${GREEN}🔍 Versi default: v1.2.13 | Versi terbaru GitHub: v${LATEST_VERSION}${NC}"
     TARGET_VERSION="1.2.13"
     if [ "$LATEST_VERSION" != "1.2.13" ]; then
-        echo -e "${YELLOW}Apakah Anda ingin menginstal versi terbaru GenieACS (v${LATEST_VERSION})? (y/N - default 'n' = v1.2.13):${NC}"
-        read -t 15 update_choice || update_choice="n"
+        echo -e "${YELLOW}Apakah Anda ingin menginstal versi terbaru GenieACS (v${LATEST_VERSION})? (y/N - default 'n' = v1.2.13, tunggu 2 menit):${NC}"
+        read -t 120 update_choice || update_choice="n"
         if [[ "$update_choice" =~ ^[Yy]$ ]]; then
             TARGET_VERSION="$LATEST_VERSION"
         fi
