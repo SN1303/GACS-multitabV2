@@ -24,24 +24,8 @@ git clone https://github.com/SN1303/GACS-multitabV2.git
 cd GACS-multitabV2
 ```
 
-```
-chmod +x install-v22-04.sh && install-armbian.sh
-```
-
-Ubuntu 20.04/22.04
-
-```
-./install-v22-04.sh
-```
-
-ARMBIAN
-
-```
-install-armbian.sh
-```
-
-```
-reboot
+```bash
+chmod +x install.sh && ./install.sh
 ```
 
 ## kalau sudah ada genieacsnya
