@@ -247,8 +247,15 @@ install_multitab_and_restore() {
         fi
 
         if command -v mongorestore &> /dev/null; then
-            mongorestore --db genieacs --drop "$SCRIPT_DIR/db"
-            echo -e "${GREEN}✅ Restore database multitab berhasil!${NC}"
+            for col in config presets provisions virtualParameters files; do
+                if [ -f "$SCRIPT_DIR/db/${col}.bson" ]; then
+                    mongorestore --db genieacs --collection "$col" --drop "$SCRIPT_DIR/db/${col}.bson"
+                fi
+            done
+            if [ -f "$SCRIPT_DIR/db/users.bson" ]; then
+                mongorestore --db genieacs --collection users "$SCRIPT_DIR/db/users.bson" 2>/dev/null || true
+            fi
+            echo -e "${GREEN}✅ Restore database konfigurasi & multitab berhasil (aman, data perangkat tidak dihapus)!${NC}"
         else
             echo -e "${RED}⚠️  mongorestore tidak ditemukan. Melewati restore DB otomatis.${NC}"
         fi
