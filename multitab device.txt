@@ -17,7 +17,6 @@
               parameters:
                 - InternetGatewayDevice.DeviceInfo.HardwareVersion
                 - InternetGatewayDevice.DeviceInfo.SoftwareVersion
-                - InternetGatewayDevice
         - label: "'Serial number'"
           parameter: DeviceID.SerialNumber
         - label: "'Product class'"
