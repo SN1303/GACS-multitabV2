@@ -176,7 +176,7 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     ));
     legendItems.push(p("span.legend-total", "Total: " + n));
 
-    return p("loading", {queries: Object.values(t).map(g => g.count)},
+    return p("loading", {queries: sliceList.map(g => g.count).filter(Boolean)},
       p("div", {class: "custom-line-chart"}, [
         p("svg", {viewBox: "0 0 " + W + " " + H, width: "100%", height: H + "px"}, [
           p("defs", [
@@ -231,7 +231,7 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     });
     rows.push(p("span.legend-total", "Total: " + n));
 
-    return p("loading", {queries: Object.values(t).map(g => g.count)},
+    return p("loading", {queries: sliceList.map(g => g.count).filter(Boolean)},
       p("div", {class: "custom-bar-chart"}, [
         p(".legend", rows)
       ])
@@ -275,7 +275,7 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
   i.push(p("text", {x: 0, y: 13, fill: "rgba(203, 213, 225, 0.6)", "font-size": "8.5px", "font-weight": "700", "letter-spacing": "0.5px", "dominant-baseline": "middle", "text-anchor": "middle"}, "TOTAL"));
 
   r.push(p("span.legend-total", "Total: " + n));
-  return p("loading", {queries: Object.values(t).map(g => g.count)},
+  return p("loading", {queries: sliceList.map(g => g.count).filter(Boolean)},
     p("div", {class: "pie-chart"}, [
       p("svg", {viewBox: "-102 -102 204 204", width: "195px", height: "195px", xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"}, s.concat(i)),
       p(".legend", r)
