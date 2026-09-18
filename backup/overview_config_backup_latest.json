@@ -1,0 +1,358 @@
+[
+  {
+    "_id": "ui.overview.charts.online.slices.1_onlineNow.label",
+    "value": "'on'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.1_onlineNow.filter",
+    "value": "Events.Inform > NOW() - 220 * 1000"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.1_onlineNow.color",
+    "value": "'#00DBFF'"
+  },
+  {
+    "_id": "ui.overview.charts.online.label",
+    "value": "\"status\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.label",
+    "value": "'Merk Perangkat'"
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.1_Normal.color",
+    "value": "'#0000FF'"
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.label",
+    "value": "\"Optical RX\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.1_Normal.filter",
+    "value": "VirtualParameters.RXPower < \"-23\" AND VirtualParameters.RXPower <> \"N/A\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.1_Normal.label",
+    "value": "'Bagus'"
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.2_Warning.color",
+    "value": "\"#7CFC00\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.3_Critical.color",
+    "value": "\"#FF2400\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.2_Warning.filter",
+    "value": "VirtualParameters.RXPower >= \"-23\" AND VirtualParameters.RXPower < \"-26\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.3_Critical.filter",
+    "value": "VirtualParameters.RXPower >= \"-26\" AND VirtualParameters.RXPower <> \"N/A\""
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.2_Warning.label",
+    "value": "'Sedang'"
+  },
+  {
+    "_id": "ui.overview.charts.PON Power.slices.3_Critical.label",
+    "value": "'Kritis'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.1_Huawei.color",
+    "value": "'#00DBFF'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.1_Huawei.filter",
+    "value": "DeviceID.Manufacturer = \"Huawei Technologies Co., Ltd\" OR DeviceID.Manufacturer = \"EcomTech Technologies Co., Ltd\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.1_Huawei.label",
+    "value": "'Huawei'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.2_Fiberhome.filter",
+    "value": "DeviceID.Manufacturer = \"FiberHome\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.2_Fiberhome.label",
+    "value": "'FiberHome'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.2_Fiberhome.color",
+    "value": "'#37D615'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.4_TOTO.color",
+    "value": "'#A400FF'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.4_TOTO.filter",
+    "value": "DeviceID.Manufacturer = \"ZIONCOM\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.5_ZTE.color",
+    "value": "'#FBF104'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.5_ZTE.filter",
+    "value": "DeviceID.Manufacturer = \"ZTE\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.6_Mikrotik.color",
+    "value": "'#FB0489'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.6_Mikrotik.filter",
+    "value": "DeviceID.Manufacturer = \"MikroTik\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.6_Mikrotik.label",
+    "value": "'MikroTik'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.4_TOTO.label",
+    "value": "'TOTOLINK'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.5_ZTE.label",
+    "value": "'ZTE'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.label",
+    "value": "'Devices Register'"
+  },
+  {
+    "_id": "ui.overview.groups.2_register.charts.0",
+    "value": "'ont-type'"
+  },
+  {
+    "_id": "ui.overview.groups.1_status.charts.2",
+    "value": "\"PON Power\""
+  },
+  {
+    "_id": "ui.overview.groups.1_status.label",
+    "value": "'ACS Config & Monitoring'"
+  },
+  {
+    "_id": "ui.overview.groups.1_status.charts.0",
+    "value": "'online'"
+  },
+  {
+    "_id": "ui.overview.groups.1_status.charts.1",
+    "value": "'Access Type'"
+  },
+  {
+    "_id": "ui.overview.groups.2_register.charts.1",
+    "value": "'devreg'"
+  },
+  {
+    "_id": "ui.overview.charts.temp.label",
+    "value": "\"Optical Temperatur\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.1_Normal.label",
+    "value": "'Adem < 45℃'"
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.1_Normal.filter",
+    "value": "VirtualParameters.gettemp <= \"45\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.3_Critical.color",
+    "value": "\"#FF2400\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.3_Critical.filter",
+    "value": "VirtualParameters.gettemp >= \"65\" AND VirtualParameters.gettemp < \"70\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.3_Critical.label",
+    "value": "'Puanass > 65℃'"
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.2_Warning.color",
+    "value": "\"#fffa00\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.2_Warning.filter",
+    "value": "VirtualParameters.gettemp > \"45\" AND VirtualParameters.gettemp < \"60\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.1_Normal.color",
+    "value": "'#00DBFF'"
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.2_Warning.label",
+    "value": "'Anget > 45℃'"
+  },
+  {
+    "_id": "ui.overview.groups.2_register.charts.2",
+    "value": "'temp'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.2_past5m.color",
+    "value": "'#FF2400'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.2_past5m.filter",
+    "value": "Events.Inform < (NOW() - 220 * 1000) AND Events.Inform > (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.2_past5m.label",
+    "value": "'off'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.7_Other.color",
+    "value": "'#D65315'"
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.7_Other.filter",
+    "value": "DeviceID.Manufacturer <> \"MikroTik\" AND DeviceID.Manufacturer <> \"ZTE\" AND DeviceID.Manufacturer <> \"ZIONCOM\" AND DeviceID.Manufacturer <> \"EcomTech Technologies Co., Ltd\" AND DeviceID.Manufacturer <> \"FiberHome\" AND DeviceID.Manufacturer <> \"Huawei Technologies Co., Ltd\""
+  },
+  {
+    "_id": "ui.overview.charts.ont-type.slices.7_Other.label",
+    "value": "'Other'"
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.4_Critical.color",
+    "value": "\"#FF2400\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.4_Critical.filter",
+    "value": "VirtualParameters.gettemp >= \"70\" AND VirtualParameters.gettemp <> \"N/A\""
+  },
+  {
+    "_id": "ui.overview.charts.temp.slices.4_Critical.label",
+    "value": "'Awas!!! > 70℃'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.4_past24h.color",
+    "value": "'#a82d2d'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.4_past24h.label",
+    "value": "'off > 24h'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.5_past3d.color",
+    "value": "'#823333'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.4_past24h.filter",
+    "value": "Events.Inform < (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000) AND Events.Inform > (NOW() - 5 * 60 * 1000) - (3 * 24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.5_past3d.filter",
+    "value": "Events.Inform < (NOW() - 5 * 60 * 1000) - (3 * 24 * 60 * 60 * 1000) AND Events.Inform > (NOW() - 5 * 60 * 1000) - (7 * 24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.5_past3d.label",
+    "value": "'off > 3d'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.6_past7d.color",
+    "value": "'#5c3333'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.6_past7d.filter",
+    "value": "Events.Inform < (NOW() - 5 * 60 * 1000) - (7 * 24 * 60 * 60 * 1000) AND Events.Inform > (NOW() - 5 * 60 * 1000) - (30 * 24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.6_past7d.label",
+    "value": "'off > 7d'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.7_past30d.color",
+    "value": "'#3b2727'"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.7_past30d.filter",
+    "value": "Events.Inform < (NOW() - 5 * 60 * 1000) - (30 * 24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.online.slices.7_past30d.label",
+    "value": "'off > 30d'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.1_GPON.color",
+    "value": "'#00DBFF'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.label",
+    "value": "'Access Type'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.1_GPON.filter",
+    "value": "VirtualParameters.getponmode = \"GPON\" OR VirtualParameters.getponmode = \"X_CU_GPON\""
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.1_GPON.label",
+    "value": "'GPON'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.2_EPON.color",
+    "value": "'#5BFF00'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.2_EPON.filter",
+    "value": "VirtualParameters.getponmode = \"EPON\" OR VirtualParameters.getponmode = \"X_CU_EPON\""
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.2_EPON.label",
+    "value": "'EPON'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.3_ETHER.filter",
+    "value": "VirtualParameters.getponmode = \"Ethernet\" OR VirtualParameters.getponmode = \"\""
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.3_ETHER.color",
+    "value": "'#A400FF'"
+  },
+  {
+    "_id": "ui.overview.charts.Access Type.slices.3_ETHER.label",
+    "value": "'Ethernet/Converter'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.2_hariini.color",
+    "value": "'#D65315'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.2_hariini.label",
+    "value": "'Register Hari Ini'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.3_minggu.filter",
+    "value": "Events.Registered > (NOW() - 5 * 60 * 1000) - (24 * 7 * 60 * 60 * 1000) AND Events.Registered < (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.3_minggu.label",
+    "value": "'Register < 7 hari'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.4_bulan.color",
+    "value": "'#5BFF00'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.3_minggu.color",
+    "value": "'#A400FF'"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.4_bulan.filter",
+    "value": "Events.Registered > (NOW() - 5 * 60 * 1000) - (24 * 30 * 60 * 60 * 1000) AND Events.Registered < (NOW() - 5 * 60 * 1000) - (24 * 7 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.2_hariini.filter",
+    "value": "Events.Registered > (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000)"
+  },
+  {
+    "_id": "ui.overview.charts.devreg.slices.4_bulan.label",
+    "value": "'Register < 30 hari'"
+  },
+  {
+    "_id": "ui.overview.groups.2_register.label",
+    "value": "'Registration & Info'"
+  }
+]
