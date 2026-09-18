@@ -326,12 +326,20 @@ install_multitab_and_restore() {
     if [ -d "$SCRIPT_DIR/db" ]; then
         echo -e "${YELLOW}-> Melakukan restore database virtual parameter...${NC}"
         if command -v mongorestore &> /dev/null; then
-            mongorestore --db genieacs --drop "$SCRIPT_DIR/db"
+            for col in config presets provisions virtualParameters files permissions users; do
+                if [ -f "$SCRIPT_DIR/db/${col}.bson" ]; then
+                    mongorestore --db genieacs --collection "$col" --drop "$SCRIPT_DIR/db/${col}.bson"
+                fi
+            done
             echo -e "${GREEN}✅ Restore database berhasil!${NC}"
         else
             echo -e "${RED}❌ mongorestore tidak ditemukan, menginstal mongodb-database-tools...${NC}"
             apt-get install -y mongodb-database-tools 2>/dev/null || true
-            mongorestore --db genieacs --drop "$SCRIPT_DIR/db" 2>/dev/null || true
+            for col in config presets provisions virtualParameters files permissions users; do
+                if [ -f "$SCRIPT_DIR/db/${col}.bson" ]; then
+                    mongorestore --db genieacs --collection "$col" --drop "$SCRIPT_DIR/db/${col}.bson" 2>/dev/null || true
+                fi
+            done
         fi
 
         # Auto-update IP Server pada provision 'inform'
