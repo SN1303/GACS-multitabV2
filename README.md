@@ -145,9 +145,11 @@ docker-compose restart
 Proyek ini dibangun dan dikembangkan berkat inspirasi, kontribusi, serta dokumentasi dari para pengembang dan komunitas TR-069 / GenieACS Indonesia:
 
 - **[GenieACS Core Team](https://genieacs.com/)**: Pembuat dan pengembang utama platform open-source GenieACS TR-069 Auto Configuration Server.
-- **[Berindo / Pengembang Komunitas GenieACS Indonesia](https://github.com/)**: Penyedia inspirasi, basis repositori, serta konsep awal multi-tab dan otomasi provisioning untuk ISP/RT-RW Net Indonesia.
-- **[Ega Chanel](https://www.youtube.com/@EGACHANEL) & [UPX ID](https://www.youtube.com/)**: Kanal edukasi yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
-- **Komunitas TR-069 GenieACS Indonesia**: Para rekan teknisi NOC dan penggiat jaringan yang terus berbagi konfigurasi parameter data model untuk berbagai merk ONT (ZTE, Huawei, Fiberhome, dll).
+- **[Bery Indo (beryindo/genieacs)](https://github.com/beryindo/genieacs)**: Basis repositori, instalasi, dan penyedia konsep TR-069 GenieACS untuk komunitas ISP Indonesia.
+- **[Alijaya Net (alijayanet/genieacs-multitab)](https://github.com/alijayanet/genieacs-multitab)**: Inspirasi awal kustomisasi antarmuka UI Multi-Tab GenieACS.
+- **[Safrin Network (safrinnetwork/GACS-Ubuntu-22.04)](https://github.com/safrinnetwork/GACS-Ubuntu-22.04)**: Kontribusi otomasi script installer dan konfigurasi GenieACS di Ubuntu.
+- **[Ega Chanel](https://www.youtube.com/@EGACHANEL) & [UPX ID](https://www.youtube.com/)**: Edukator yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
+- **Komunitas TR-069 GenieACS Indonesia**: Rekan-rekan teknisi NOC dan pegiat RT-RW Net yang terus berbagi parameter data model ONT (ZTE, Huawei, Fiberhome, dll).
 
 ---
 
