@@ -34,15 +34,51 @@
         - label: "'MAC'"
           parameter: VirtualParameters.MacAddress
         - label: "'IP'"
-          parameter: VirtualParameters.pppIP
+          parameter: VirtualParameters.pppoeIP
           type: "'container'"
           components:
             - type: "'parameter'"
           element:
             tag: "'a'"
             attributes:
-              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppIP)'
+              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppoeIP)'
               target: "'_blank'"
+    - element: "'h2'"
+      type: "'container'"
+      components:
+        - "'Device Operational Status'"
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'Optic RX Power'"
+          parameter: VirtualParameters.RXPower
+          type: "'container'"
+          components:
+            - chart: "'PON Power'"
+              type: "'overview-dot'"
+            - type: "'parameter'"
+              parameter: VirtualParameters.RXPower
+        - label: "'Device Temperature'"
+          parameter: VirtualParameters.gettemp
+          type: "'container'"
+          components:
+            - chart: "'temp'"
+              type: "'overview-dot'"
+            - type: "'parameter'"
+              parameter: VirtualParameters.gettemp
+        - label: "'PON Mode'"
+          parameter: VirtualParameters.getponmode
+          type: "'container'"
+          components:
+            - chart: "'Access Type'"
+              type: "'overview-dot'"
+            - type: "'parameter'"
+              parameter: VirtualParameters.getponmode
+        - label: "'Device Uptime'"
+          parameter: VirtualParameters.getdeviceuptime
+        - label: "'PPPoE Uptime'"
+          parameter: VirtualParameters.getpppuptime
+        - label: "'Active WiFi Clients'"
+          parameter: VirtualParameters.activedevices"
     - element: "'div'"
       type: "'container'"
       components:
@@ -60,7 +96,7 @@
                 - "'All parameters'"
                 - type: "'all-parameters'"
     - type: "'device-actions'"
-- label: "'WAN'"
+- label: "'WAN / LAN'"
   route: "'wan'"
   components:
     - type: "'tags'"
@@ -87,14 +123,14 @@
         - label: "'MAC'"
           parameter: VirtualParameters.MacAddress
         - label: "'IP'"
-          parameter: VirtualParameters.pppIP
+          parameter: VirtualParameters.pppoeIP
           type: "'container'"
           components:
             - type: "'parameter'"
           element:
             tag: "'a'"
             attributes:
-              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppIP)'
+              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppoeIP)'
               target: "'_blank'"
     - filter: DeviceID.Manufacturer = "Huawei Technologies Co., Ltd"
       type: "'container'"
@@ -562,8 +598,7 @@
               parameter: X_CMCC_LanInterface
             - label: "'Status'"
               parameter: ConnectionStatus
-    - filter: (InternetGatewayDevice.WANDevice.1.X_ZTE-COM_WANPONInterfaceConfig.RXPower
-        IS NOT NULL)
+    - filter: DeviceID.Manufacturer = "ZTE" OR DeviceID.Manufacturer = "ZICG" OR DeviceID.Manufacturer = "AZVG" OR DeviceID.Manufacturer = "ZTEG" OR DeviceID.Manufacturer = "MONU" OR DeviceID.Manufacturer = "RTEG"
       type: "'container'"
       components:
         - element: "'div'"
@@ -654,8 +689,33 @@
               parameter: X_ZTE-COM_LanInterface
             - label: "'Status'"
               parameter: ConnectionStatus
-    - filter: (InternetGatewayDevice.WANDevice.1.X_ZTE-COM_WANPONInterfaceConfig.RXPower
-        IS NOT NULL)
+        - label: "'WAN 4 PPPoE'"
+          parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.4.WANPPPConnection
+          type: "'parameter-table'"
+          childParameters:
+            - label: "'Enable'"
+              parameter: Enable
+            - label: "'Conn Name'"
+              parameter: Name
+            - label: "'Enable VLAN'"
+              parameter: X_ZTE-COM_VLANEnable
+            - label: "'VLAN'"
+              parameter: X_ZTE-COM_VLANID
+            - label: "'Conn Type:'"
+              parameter: ConnectionType
+            - label: "'Service:'"
+              parameter: X_ZTE-COM_ServiceList
+            - label: "'Username:'"
+              parameter: Username
+            - label: "'Password:'"
+              parameter: Password
+            - label: "'NAT'"
+              parameter: NATEnabled
+            - label: "'LanBind:'"
+              parameter: X_ZTE-COM_LanInterface
+            - label: "'Status'"
+              parameter: ConnectionStatus
+    - filter: DeviceID.Manufacturer = "ZTE" OR DeviceID.Manufacturer = "ZICG" OR DeviceID.Manufacturer = "AZVG" OR DeviceID.Manufacturer = "ZTEG" OR DeviceID.Manufacturer = "MONU" OR DeviceID.Manufacturer = "RTEG"
       type: "'container'"
       components:
         - label: "'WAN 1 IPoE'"
@@ -704,6 +764,28 @@
               parameter: ConnectionStatus
         - label: "'WAN 3 IPoE'"
           parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection
+          type: "'parameter-table'"
+          childParameters:
+            - label: "'Enable'"
+              parameter: Enable
+            - label: "'Conn Name'"
+              parameter: Name
+            - label: "'Enable VLAN'"
+              parameter: X_ZTE-COM_VLANEnable
+            - label: "'VLAN'"
+              parameter: X_ZTE-COM_VLANID
+            - label: "'Conn Type:'"
+              parameter: ConnectionType
+            - label: "'Service:'"
+              parameter: X_ZTE-COM_ServiceList
+            - label: "'NAT'"
+              parameter: NATEnabled
+            - label: "'LanBind:'"
+              parameter: X_ZTE-COM_LanInterface
+            - label: "'Status'"
+              parameter: ConnectionStatus
+        - label: "'WAN 4 IPoE'"
+          parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.4.WANIPConnection
           type: "'parameter-table'"
           childParameters:
             - label: "'Enable'"
@@ -905,36 +987,10 @@
           components:
             - "'Faults'"
             - type: "'device-faults'"
-- label: "'LAN'"
-  route: "'lan'"
-  components:
-    - type: "'tags'"
-    - type: "'ping'"
-    - type: "'parameter-list'"
-      parameters:
-        - element: "'span.inform'"
-          label: "'Last inform'"
-          parameter: DATE_STRING(Events.Inform)
-          type: "'container'"
-          components:
-            - type: "'parameter'"
-            - chart: "'online'"
-              type: "'overview-dot'"
-            - type: "'summon-button'"
-              parameters:
-                - InternetGatewayDevice.LANDevice
-        - label: "'MAC'"
-          parameter: VirtualParameters.MacAddress
-        - label: "'IP'"
-          parameter: VirtualParameters.pppIP
-          type: "'container'"
-          components:
-            - type: "'parameter'"
-          element:
-            tag: "'a'"
-            attributes:
-              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppIP)'
-              target: "'_blank'"
+    - element: "'h2'"
+      type: "'container'"
+      components:
+        - "'LAN Configuration'"
     - type: "'container'"
       components:
         - type: "'parameter-list'"
@@ -1227,7 +1283,7 @@
           components:
             - "'Faults'"
             - type: "'device-faults'"
-- label: "'USER'"
+- label: "'USER / TR069'"
   route: "'user'"
   components:
     - type: "'tags'"
@@ -1257,14 +1313,14 @@
         - label: "'MAC'"
           parameter: VirtualParameters.MacAddress
         - label: "'IP'"
-          parameter: VirtualParameters.pppIP
+          parameter: VirtualParameters.pppoeIP
           type: "'container'"
           components:
             - type: "'parameter'"
           element:
             tag: "'a'"
             attributes:
-              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppIP)'
+              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppoeIP)'
               target: "'_blank'"
     - filter: DeviceID.Manufacturer = "FiberHome"
       type: "'container'"
@@ -1294,55 +1350,19 @@
               parameter: InternetGatewayDevice.X_Authentication.WebAccount.UserName
             - label: "'Password'"
               parameter: InternetGatewayDevice.X_Authentication.WebAccount.Password
-    - filter: DeviceID.Manufacturer = "ZTE"
+    - filter: DeviceID.Manufacturer = "ZTE" OR DeviceID.Manufacturer = "ZICG" OR DeviceID.Manufacturer = "AZVG" OR DeviceID.Manufacturer = "ZTEG" OR DeviceID.Manufacturer = "RTEG"
       type: "'container'"
       components:
         - type: "'parameter-list'"
           parameters:
-            - label: "'SupeUser'"
-              parameter: InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.AdminName
+            - label: "'SuperUser'"
+              parameter: VirtualParameters.superAdmin
             - label: "'Password'"
-              parameter: InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.AdminPassword
+              parameter: VirtualParameters.superPassword
             - label: "'User'"
-              parameter: InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.UserName
+              parameter: VirtualParameters.userAdmin
             - label: "'Password'"
-              parameter: InternetGatewayDevice.UserInterface.X_ZTE-COM_WebUserInfo.UserPassword
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.DeviceInfo.X_ZTE-COM_AdminAccount.Password
-    - filter: DeviceID.Manufacturer = "ZTE"
-      type: "'container'"
-      components:
-        - type: "'parameter-list'"
-          parameters:
-            - label: "'SupeUser'"
-              parameter: InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.AdminName
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.AdminPassword
-            - label: "'User'"
-              parameter: InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.UserName
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.X_ZTE-COM_UserInterface.X_ZTE-COM_WebUserInfo.UserPassword
-    - filter: DeviceID.Manufacturer = "ZTE"
-      type: "'container'"
-      components:
-        - type: "'parameter-list'"
-          parameters:
-            - label: "'SupeUser'"
-              parameter: InternetGatewayDevice.User.1.Username
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.User.1.Password
-            - label: "'User'"
-              parameter: InternetGatewayDevice.User.2.Username
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.User.2.Password
-            - label: "'SupeUser'"
-              parameter: InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalAdminName
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalAdminPassword
-            - label: "'User'"
-              parameter: InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalUserName
-            - label: "'Password'"
-              parameter: InternetGatewayDevice.X_CU_Function.ServiceMgt.LocalUserPassword
+              parameter: VirtualParameters.userPassword
     - filter: DeviceID.Manufacturer	= "ZIONCOM"
       type: "'container'"
       components:
@@ -1405,36 +1425,10 @@
               parameter: InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.2.UserName
             - label: "'Password'"
               parameter: InternetGatewayDevice.UserInterface.X_HW_WebUserInfo.2.Password
-- label: "'TR069'"
-  route: "'tr069'"
-  components:
-    - type: "'tags'"
-    - type: "'ping'"
-    - type: "'parameter-list'"
-      parameters:
-        - element: "'span.inform'"
-          label: "'Last inform'"
-          parameter: DATE_STRING(Events.Inform)
-          type: "'container'"
-          components:
-            - type: "'parameter'"
-            - chart: "'online'"
-              type: "'overview-dot'"
-            - type: "'summon-button'"
-              parameters:
-                - InternetGatewayDevice.ManagementServer
-        - label: "'MAC'"
-          parameter: VirtualParameters.MacAddress
-        - label: "'IP'"
-          parameter: VirtualParameters.pppIP
-          type: "'container'"
-          components:
-            - type: "'parameter'"
-          element:
-            tag: "'a'"
-            attributes:
-              href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppIP)'
-              target: "'_blank'"
+    - element: "'h2'"
+      type: "'container'"
+      components:
+        - "'TR-069 ACS Settings'"
     - type: "'container'"
       components:
         - type: "'parameter-list'"
@@ -1445,8 +1439,8 @@
               parameter: InternetGatewayDevice.ManagementServer.InformParameter
             - label: "'Informing Interval:'"
               parameter: InternetGatewayDevice.ManagementServer.PeriodicInformInterval
-            - label: "'Informing Time:'"
-              parameter: InternetGatewayDevice.ManagementServer.PeriodicInformTime
+            - label: "'Last Inform:'"
+              parameter: DATE_STRING(Events.Inform)
             - label: "'ACS URL:'"
               parameter: InternetGatewayDevice.ManagementServer.URL
             - label: "'ACS User Name:'"
