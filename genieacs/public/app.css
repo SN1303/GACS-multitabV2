@@ -1561,23 +1561,23 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
 
 /* Overview Container */
 .page-overview {
-    padding: 20px 30px;
-    max-width: 1600px;
+    padding: 24px 36px;
+    max-width: 1650px;
     margin: 0 auto;
 }
 
 .page-overview > h1 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
-    color: #00f2fe;
-    text-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
-    margin: 28px 0 16px 0;
+    color: #38bdf8;
+    text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+    margin: 28px 0 18px 0;
     text-align: left;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .page-overview > h1::before {
@@ -1585,29 +1585,29 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     display: inline-block;
     width: 6px;
     height: 22px;
-    background: linear-gradient(180deg, #00f2fe 0%, #4facfe 100%);
+    background: linear-gradient(180deg, #38bdf8 0%, #818cf8 100%);
     border-radius: 4px;
-    box-shadow: 0 0 10px #00f2fe;
+    box-shadow: 0 0 12px #38bdf8;
 }
 
 /* Overview Chart Grid */
 .overview-chart-group {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
-    gap: 22px !important;
-    margin-bottom: 25px !important;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    gap: 24px !important;
+    margin-bottom: 28px !important;
     justify-content: stretch !important;
 }
 
 /* Glassmorphism Card for Each Chart */
 .overview-chart {
-    background: rgba(13, 20, 48, 0.72) !important;
-    backdrop-filter: blur(14px) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    border: 1px solid rgba(0, 219, 255, 0.18) !important;
-    border-radius: 14px !important;
+    background: rgba(11, 17, 44, 0.75) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(56, 189, 248, 0.16) !important;
+    border-radius: 16px !important;
     padding: 22px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
     overflow: hidden;
@@ -1616,21 +1616,31 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     justify-content: space-between;
 }
 
+.overview-chart::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+}
+
 .overview-chart:hover {
-    transform: translateY(-4px) scale(1.01);
-    border-color: rgba(0, 219, 255, 0.45) !important;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 219, 255, 0.2) !important;
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.2) !important;
 }
 
 /* Chart Title */
 .overview-chart h2 {
     font-size: 1.05rem !important;
-    font-weight: 600 !important;
-    color: #e2e8f0 !important;
+    font-weight: 700 !important;
+    color: #f1f5f9 !important;
     text-align: left !important;
-    margin: 0 0 18px 0 !important;
-    padding-bottom: 10px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin: 0 0 16px 0 !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
     letter-spacing: 0.3px;
     display: flex;
     align-items: center;
@@ -1647,141 +1657,189 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
 }
 
 .pie-chart > svg {
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
     transition: transform 0.3s ease;
 }
 
 .pie-chart > svg:hover {
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 .pie-chart > svg > path {
     stroke: #0a0f29 !important;
-    stroke-width: 2.5px !important;
-    transition: opacity 0.2s, transform 0.2s;
+    stroke-width: 3px !important;
+    transition: opacity 0.2s, filter 0.2s;
     cursor: pointer;
 }
 
 .pie-chart > svg > path:hover {
-    opacity: 0.85;
-    filter: brightness(1.2);
+    filter: brightness(1.2) drop-shadow(0 0 6px currentColor);
 }
 
 .pie-chart > svg > a > text {
-    font-weight: 700 !important;
-    font-size: 13px !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
     fill: #ffffff !important;
-    opacity: 0.9 !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    opacity: 0.95 !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
 }
 
-/* Chart Legend Styling */
-.pie-chart > .legend {
+/* Shared Legend Box Styling */
+.legend {
     width: 100% !important;
-    margin: 8px 0 0 0 !important;
+    margin: 12px 0 0 0 !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
-    background: rgba(0, 0, 0, 0.25);
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(4, 7, 26, 0.45);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
 }
 
-.pie-chart > .legend > .legend-line {
+.legend > .legend-line {
     display: flex !important;
     align-items: center !important;
-    font-size: 0.85rem !important;
+    font-size: 0.84rem !important;
     color: #cbd5e1 !important;
     justify-content: space-between;
+    padding: 3px 0;
 }
 
-.pie-chart > .legend > .legend-line > .color {
-    width: 10px !important;
-    height: 10px !important;
+.legend-label-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.legend-label-wrap > .color {
+    width: 9px !important;
+    height: 9px !important;
     border-radius: 50% !important;
-    margin-right: 8px !important;
     box-shadow: 0 0 8px currentColor;
     border: none !important;
+    flex-shrink: 0;
 }
 
-.pie-chart > .legend > .legend-line > a {
+.legend-val-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-val-badge {
     color: #38bdf8 !important;
     font-weight: 700 !important;
     text-decoration: none !important;
     background: rgba(56, 189, 248, 0.12) !important;
-    padding: 2px 8px !important;
+    padding: 2px 9px !important;
     border-radius: 6px !important;
-    box-shadow: none !important;
+    border: 1px solid rgba(56, 189, 248, 0.25) !important;
+    font-size: 0.85rem !important;
     transition: all 0.2s ease !important;
+    display: inline-block;
 }
 
-.pie-chart > .legend > .legend-line > a:hover {
-    background: rgba(56, 189, 248, 0.28) !important;
+.legend-val-badge:hover {
+    background: rgba(56, 189, 248, 0.3) !important;
     color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
 }
 
-.pie-chart > .legend > span.legend-total {
+.slice-pct {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.legend > span.legend-total {
     margin-top: 6px;
     padding-top: 8px;
     border-top: 1px dashed rgba(255, 255, 255, 0.12);
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #f8fafc;
     text-align: right;
     display: block;
+    letter-spacing: 0.3px;
 }
 
-/* Custom Line Chart & Bar Chart Widgets */
-.custom-line-chart, .custom-bar-chart {
+/* Custom Line Chart */
+.custom-line-chart {
     width: 100%;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .custom-line-chart svg {
     overflow: visible;
 }
 
-.line-chart-path {
-    fill: none;
-    stroke: url(#lineGradient);
-    stroke-width: 3.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(0 4px 8px rgba(0, 219, 255, 0.4));
-}
-
-.line-chart-area {
-    fill: url(#areaGradient);
-    opacity: 0.45;
+/* Custom Horizontal Bar Chart */
+.custom-bar-chart {
+    width: 100%;
 }
 
 .bar-row {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.bar-row:last-child {
+    margin-bottom: 0;
 }
 
 .bar-row-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.82rem;
-    margin-bottom: 4px;
-    color: #cbd5e1;
+    align-items: center;
+    font-size: 0.83rem;
+    margin-bottom: 6px;
+}
+
+.bar-label-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.bar-value-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bar-pct-text {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    min-width: 38px;
+    text-align: right;
 }
 
 .bar-progress-track {
     width: 100%;
-    height: 9px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
     overflow: hidden;
     position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .bar-progress-fill {
     height: 100%;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px currentColor;
+    box-shadow: 0 0 8px currentColor;
 }
 
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
