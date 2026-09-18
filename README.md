@@ -10,7 +10,7 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
    - **Summary**: Informasi identitas perangkat & seksi **Device Operational Status** (Optic RX Power, Suhu ONT, Mode PON, Uptime, Klien WiFi aktif) dengan indikator bulatan warna status yang bersih.
    - **WAN / LAN**: Penggabungan informasi konfigurasi WAN (PPPoE / IPoE) dan LAN Configuration dalam satu tab.
    - **WLAN**: Konfigurasi SSID WiFi, keamanan (WPA-PSK), dan channel.
-   - **USER / TR069**: Penggabungan kredensial akun Web GUI ONT (SuperAdmin / User) dan parameter TR-069 ACS Settings (dengan penunjuk waktu *Last Inform* real).
+   - **USER / TR069**: Penggabungan kredensial akun Web GUI ONT (SuperAdmin / User) dan parameter TR-069 ACS Settings (dengan penunjuk waktu _Last Inform_ real).
 
 2. **Indikator Status Warna Visual**:
    - **PON Mode**: 🔵 EPON (Biru), 🟢 GPON (Hijau), 🟠 Ethernet/Converter (Orange).
@@ -19,8 +19,8 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
 
 3. **Halaman Perangkat (`/devices`) Efisien**:
    - Kolom tabel ringkas & padat tanpa duplikasi.
-   - Kolom *Uptime* diletakkan tepat di depan *Last Inform*.
-   - Parameter *Active WiFi Clients* menghitung seluruh klien yang terhubung pada semua SSID (1 - 8).
+   - Kolom _Uptime_ diletakkan tepat di depan _Last Inform_.
+   - Parameter _Active WiFi Clients_ menghitung seluruh klien yang terhubung pada semua SSID (1 - 8).
 
 4. **Kredensial Akun Web GUI Dinamis**:
    - Terintegrasi langsung dengan `VirtualParameters.superAdmin/superPassword` dan `userAdmin/userPassword` untuk berbagai tipe ONT ZTE, Huawei, dan Fiberhome.
@@ -131,12 +131,12 @@ docker-compose restart
 
 ## Konfigurasi Port Default
 
-| Layanan | Port | Keterangan |
-|---|---|---|
-| **GenieACS UI** | `3000` | Tampilan Web GUI Frontend |
-| **GenieACS CWMP** | `7547` | Port koneksi TR-069 dari ONT |
+| Layanan                | Port   | Keterangan                             |
+| ---------------------- | ------ | -------------------------------------- |
+| **GenieACS UI**        | `3000` | Tampilan Web GUI Frontend              |
+| **GenieACS CWMP**      | `7547` | Port koneksi TR-069 dari ONT           |
 | **GenieACS NBI (API)** | `7557` | Northbound API untuk automasi & preset |
-| **GenieACS FS** | `7567` | File server untuk firmware update |
+| **GenieACS FS**        | `7567` | File server untuk firmware update      |
 
 ---
 
@@ -148,11 +148,11 @@ Proyek ini dibangun dan dikembangkan berkat inspirasi, kontribusi, serta dokumen
 - **[Bery Indo (beryindo/genieacs)](https://github.com/beryindo/genieacs)**: Basis repositori, instalasi, dan penyedia konsep TR-069 GenieACS untuk komunitas ISP Indonesia.
 - **[Alijaya Net (alijayanet/genieacs-multitab)](https://github.com/alijayanet/genieacs-multitab)**: Inspirasi awal kustomisasi antarmuka UI Multi-Tab GenieACS.
 - **[Safrin Network (safrinnetwork/GACS-Ubuntu-22.04)](https://github.com/safrinnetwork/GACS-Ubuntu-22.04)**: Kontribusi otomasi script installer dan konfigurasi GenieACS di Ubuntu.
-- **[Ega Chanel](https://www.youtube.com/@EGACHANEL) & [UPX ID](https://www.youtube.com/)**: Edukator yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
+- **[Ega Chanel](https://www.youtube.com/) & [UPX ID](https://www.youtube.com/)**: Edukator yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
 - **Komunitas TR-069 GenieACS Indonesia**: Rekan-rekan teknisi NOC dan pegiat RT-RW Net yang terus berbagi parameter data model ONT (ZTE, Huawei, Fiberhome, dll).
 
 ---
 
 ## Lisensi & Kontribusi
 
-Silakan berkontribusi, membuka *pull request*, atau menyesuaikan untuk kebutuhan operasional jaringan FTTH masing-masing.
+Silakan berkontribusi, membuka _pull request_, atau menyesuaikan untuk kebutuhan operasional jaringan FTTH masing-masing.
