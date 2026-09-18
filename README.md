@@ -140,6 +140,17 @@ docker-compose restart
 
 ---
 
+## Credits & Acknowledgements
+
+Proyek ini dibangun dan dikembangkan berkat inspirasi, kontribusi, serta dokumentasi dari para pengembang dan komunitas TR-069 / GenieACS Indonesia:
+
+- **[GenieACS Core Team](https://genieacs.com/)**: Pembuat dan pengembang utama platform open-source GenieACS TR-069 Auto Configuration Server.
+- **[Berindo / Pengembang Komunitas GenieACS Indonesia](https://github.com/)**: Penyedia inspirasi, basis repositori, serta konsep awal multi-tab dan otomasi provisioning untuk ISP/RT-RW Net Indonesia.
+- **[Ega Chanel](https://www.youtube.com/@EGACHANEL) & [UPX ID](https://www.youtube.com/)**: Kanal edukasi yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
+- **Komunitas TR-069 GenieACS Indonesia**: Para rekan teknisi NOC dan penggiat jaringan yang terus berbagi konfigurasi parameter data model untuk berbagai merk ONT (ZTE, Huawei, Fiberhome, dll).
+
+---
+
 ## Lisensi & Kontribusi
 
-Silakan berkontribusi atau menyesuaikan untuk kebutuhan jaringan FTTH masing-masing.
+Silakan berkontribusi, membuka *pull request*, atau menyesuaikan untuk kebutuhan operasional jaringan FTTH masing-masing.
