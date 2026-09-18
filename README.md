@@ -148,7 +148,7 @@ Proyek ini dibangun dan dikembangkan berkat inspirasi, kontribusi, serta dokumen
 - **[Bery Indo (beryindo/genieacs)](https://github.com/beryindo/genieacs)**: Basis repositori, instalasi, dan penyedia konsep TR-069 GenieACS untuk komunitas ISP Indonesia.
 - **[Alijaya Net (alijayanet/genieacs-multitab)](https://github.com/alijayanet/genieacs-multitab)**: Inspirasi awal kustomisasi antarmuka UI Multi-Tab GenieACS.
 - **[Safrin Network (safrinnetwork/GACS-Ubuntu-22.04)](https://github.com/safrinnetwork/GACS-Ubuntu-22.04)**: Kontribusi otomasi script installer dan konfigurasi GenieACS di Ubuntu.
-- **[Ega Chanel](https://www.youtube.com/@EGACHANEL) & [UPX ID](https://www.youtube.com/)**: Edukator yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
+- **[Ega Chanel](https://www.youtube.com/) & [UPX ID](https://www.youtube.com/)**: Edukator yang aktif membagikan panduan instalasi, zero-touch provisioning, dan manajemen ONT TR-069.
 - **Komunitas TR-069 GenieACS Indonesia**: Rekan-rekan teknisi NOC dan pegiat RT-RW Net yang terus berbagi parameter data model ONT (ZTE, Huawei, Fiberhome, dll).
 
 ---
