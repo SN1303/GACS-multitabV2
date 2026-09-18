@@ -227,8 +227,8 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     let chartKey = t.toLowerCase();
     let chartLabel = (G(n.label, null) || "").toLowerCase();
 
-    // 1. Access Type (PON Mode): samakan warna dengan dot Summary
-    if (chartKey.includes("access") || chartLabel.includes("access") || chartKey.includes("pon")) {
+    // 1. Access Type (PON Mode)
+    if (chartKey === "access type" || chartLabel === "access type") {
       n.slices = {
         "1_epon": {
           label: "'EPON'",
@@ -244,6 +244,26 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
           label: "'Ethernet/Converter'",
           color: "'#fa8c16'",
           filter: "VirtualParameters.getponmode = \"Ethernet\" OR VirtualParameters.getponmode = \"\""
+        }
+      };
+    }
+    // 1b. Optical RX (PON Power): Bagus, Sedang, Kritis dengan range dBm
+    else if (chartKey.includes("pon power") || chartLabel.includes("optical rx") || chartLabel.includes("pon power") || chartLabel.includes("rx power")) {
+      n.slices = {
+        "1_normal": {
+          label: "'Bagus (> -24 dBm)'",
+          color: "'#52c41a'",
+          filter: "VirtualParameters.RXPower > \"-24\" AND VirtualParameters.RXPower <> \"N/A\""
+        },
+        "2_warning": {
+          label: "'Sedang (-24 s/d -27 dBm)'",
+          color: "'#fa8c16'",
+          filter: "VirtualParameters.RXPower <= \"-24\" AND VirtualParameters.RXPower >= \"-27\""
+        },
+        "3_critical": {
+          label: "'Kritis (< -27 dBm)'",
+          color: "'#f5222d'",
+          filter: "VirtualParameters.RXPower < \"-27\" AND VirtualParameters.RXPower <> \"N/A\""
         }
       };
     }
