@@ -5,6 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 .env
 .env.local
+.gitignore
 
 # Node modules & dependencies
 node_modules/
@@ -15,7 +16,7 @@ public/dist/
 # Backup & Original Folders
 genieacs-multitab-ori/
 genieacs-master/
-backups/
+backup/
 
 # Database & Runtime Snapshots
 db/*.sqlite
