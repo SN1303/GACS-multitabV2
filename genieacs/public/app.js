@@ -231,39 +231,39 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     if (chartKey === "access type" || chartLabel === "access type") {
       n.slices = {
         "1_epon": {
-          label: "'EPON'",
-          color: "'#1890ff'",
-          filter: "VirtualParameters.getponmode = \"EPON\" OR VirtualParameters.getponmode = \"X_CU_EPON\""
+          label: "EPON",
+          color: "#1890ff",
+          filter: ["OR", ["=", ["PARAM", "VirtualParameters.getponmode"], "EPON"], ["=", ["PARAM", "VirtualParameters.getponmode"], "X_CU_EPON"]]
         },
         "2_gpon": {
-          label: "'GPON'",
-          color: "'#52c41a'",
-          filter: "VirtualParameters.getponmode = \"GPON\" OR VirtualParameters.getponmode = \"X_CU_GPON\""
+          label: "GPON",
+          color: "#52c41a",
+          filter: ["OR", ["=", ["PARAM", "VirtualParameters.getponmode"], "GPON"], ["=", ["PARAM", "VirtualParameters.getponmode"], "X_CU_GPON"]]
         },
         "3_ether": {
-          label: "'Ethernet/Converter'",
-          color: "'#fa8c16'",
-          filter: "VirtualParameters.getponmode = \"Ethernet\" OR VirtualParameters.getponmode = \"\""
+          label: "Ethernet/Converter",
+          color: "#fa8c16",
+          filter: ["OR", ["=", ["PARAM", "VirtualParameters.getponmode"], "Ethernet"], ["=", ["PARAM", "VirtualParameters.getponmode"], ""]]
         }
       };
     }
-    // 1b. Optical RX (PON Power): Bagus, Sedang, Kritis dengan range dBm
+    // 1b. Optical RX (PON Power): Bagus > -20 dBm, Sedang -20 s/d -24 dBm, Kritis < -24 dBm
     else if (chartKey.includes("pon power") || chartLabel.includes("optical rx") || chartLabel.includes("pon power") || chartLabel.includes("rx power")) {
       n.slices = {
         "1_normal": {
-          label: "'Bagus (> -24 dBm)'",
-          color: "'#52c41a'",
-          filter: "VirtualParameters.RXPower > \"-24\" AND VirtualParameters.RXPower <> \"N/A\""
+          label: "Bagus (> -20 dBm)",
+          color: "#52c41a",
+          filter: ["AND", [">", ["PARAM", "VirtualParameters.RXPower"], -20], ["!=", ["PARAM", "VirtualParameters.RXPower"], "N/A"]]
         },
         "2_warning": {
-          label: "'Sedang (-24 s/d -27 dBm)'",
-          color: "'#fa8c16'",
-          filter: "VirtualParameters.RXPower <= \"-24\" AND VirtualParameters.RXPower >= \"-27\""
+          label: "Sedang (-20 s/d -24 dBm)",
+          color: "#fa8c16",
+          filter: ["AND", ["<=", ["PARAM", "VirtualParameters.RXPower"], -20], [">=", ["PARAM", "VirtualParameters.RXPower"], -24]]
         },
         "3_critical": {
-          label: "'Kritis (< -27 dBm)'",
-          color: "'#f5222d'",
-          filter: "VirtualParameters.RXPower < \"-27\" AND VirtualParameters.RXPower <> \"N/A\""
+          label: "Kritis (< -24 dBm)",
+          color: "#f5222d",
+          filter: ["AND", ["<", ["PARAM", "VirtualParameters.RXPower"], -24], ["!=", ["PARAM", "VirtualParameters.RXPower"], "N/A"]]
         }
       };
     }
@@ -271,19 +271,19 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     else if (chartKey.includes("temp") || chartLabel.includes("temperatur")) {
       n.slices = {
         "1_normal": {
-          label: "'Normal < 55℃'",
-          color: "'#52c41a'",
-          filter: "VirtualParameters.gettemp < \"55\" AND VirtualParameters.gettemp <> \"N/A\""
+          label: "Normal < 55℃",
+          color: "#52c41a",
+          filter: ["AND", ["<", ["PARAM", "VirtualParameters.gettemp"], 55], ["!=", ["PARAM", "VirtualParameters.gettemp"], "N/A"]]
         },
         "2_warning": {
-          label: "'Hangat 55 - 65℃'",
-          color: "'#fa8c16'",
-          filter: "VirtualParameters.gettemp >= \"55\" AND VirtualParameters.gettemp <= \"65\""
+          label: "Hangat 55 - 65℃",
+          color: "#fa8c16",
+          filter: ["AND", [">=", ["PARAM", "VirtualParameters.gettemp"], 55], ["<=", ["PARAM", "VirtualParameters.gettemp"], 65]]
         },
         "3_critical": {
-          label: "'Panas > 65℃'",
-          color: "'#f5222d'",
-          filter: "VirtualParameters.gettemp > \"65\" AND VirtualParameters.gettemp <> \"N/A\""
+          label: "Panas > 65℃",
+          color: "#f5222d",
+          filter: ["AND", [">", ["PARAM", "VirtualParameters.gettemp"], 65], ["!=", ["PARAM", "VirtualParameters.gettemp"], "N/A"]]
         }
       };
     }
@@ -297,7 +297,7 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
         }
         if (k.includes("Other") || slLabel.includes("other")) {
           sl = Object.assign({}, sl, {
-            filter: "DeviceID.Manufacturer <> \"ZTE\" AND DeviceID.Manufacturer <> \"ZIONCOM\" AND DeviceID.Manufacturer <> \"EcomTech Technologies Co., Ltd\" AND DeviceID.Manufacturer <> \"FiberHome\" AND DeviceID.Manufacturer <> \"Huawei Technologies Co., Ltd\""
+            filter: ["AND", ["!=", ["PARAM", "DeviceID.Manufacturer"], "ZTE"], ["!=", ["PARAM", "DeviceID.Manufacturer"], "ZIONCOM"], ["!=", ["PARAM", "DeviceID.Manufacturer"], "EcomTech Technologies Co., Ltd"], ["!=", ["PARAM", "DeviceID.Manufacturer"], "FiberHome"], ["!=", ["PARAM", "DeviceID.Manufacturer"], "Huawei Technologies Co., Ltd"]]
           });
         }
         newSlices[k] = sl;
