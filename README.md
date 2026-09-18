@@ -1,26 +1,40 @@
-# GENIEACS INSTALL MULTITAB
+# GENIEACS INSTALL MULTITAB V2
 
-<!--
-#### <img width="1358" height="650" alt="Image" src="https://github.com/user-attachments/assets/d2689a26-9eed-4449-a0d3-2edffddd7bc6" />
+Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome, dll) dengan tampilan modern, ringkas, dan informatif.
 
-#### <img width="1358" height="650" alt="Image" src="https://github.com/user-attachments/assets/c13ed312-d007-4cc2-987d-e82f171dd7ce" />
+---
 
-#### <img width="1358" height="650" alt="Image" src="https://github.com/user-attachments/assets/fdf7acae-cd32-404d-a50e-d77b59156ea5" />
+## Fitur Utama Multi-Tab V2
 
-#### <img width="1358" height="650" alt="Image" src="https://github.com/user-attachments/assets/2d530df8-beb3-493e-ad04-8bafbc39ad3f" />
--->
+1. **Struktur Multi-Tab Ringkas (4 Tab Utama)**:
+   - **Summary**: Informasi identitas perangkat & seksi **Device Operational Status** (Optic RX Power, Suhu ONT, Mode PON, Uptime, Klien WiFi aktif) dengan indikator bulatan warna status yang bersih.
+   - **WAN / LAN**: Penggabungan informasi konfigurasi WAN (PPPoE / IPoE) dan LAN Configuration dalam satu tab.
+   - **WLAN**: Konfigurasi SSID WiFi, keamanan (WPA-PSK), dan channel.
+   - **USER / TR069**: Penggabungan kredensial akun Web GUI ONT (SuperAdmin / User) dan parameter TR-069 ACS Settings (dengan penunjuk waktu *Last Inform* real).
 
-## Cara Penggunaan
+2. **Indikator Status Warna Visual**:
+   - **PON Mode**: 🔵 EPON (Biru), 🟢 GPON (Hijau), 🟠 Ethernet/Converter (Orange).
+   - **Optic RX Power**: 🟢 Bagus (< -23 dBm), 🟡 Sedang (-23 s/d -26 dBm), 🔴 Kritis (>= -26 dBm).
+   - **Device Temperature**: 🟢 Adem (<= 45 °C), 🟡 Hangat (46 - 60 °C), 🔴 Panas (> 60 °C).
 
+3. **Halaman Perangkat (`/devices`) Efisien**:
+   - Kolom tabel ringkas & padat tanpa duplikasi.
+   - Kolom *Uptime* diletakkan tepat di depan *Last Inform*.
+   - Parameter *Active WiFi Clients* menghitung seluruh klien yang terhubung pada semua SSID (1 - 8).
+
+4. **Kredensial Akun Web GUI Dinamis**:
+   - Terintegrasi langsung dengan `VirtualParameters.superAdmin/superPassword` dan `userAdmin/userPassword` untuk berbagai tipe ONT ZTE, Huawei, dan Fiberhome.
+
+---
+
+## Cara Penggunaan (Fresh Install)
+
+```bash
+apt update && apt install git curl -y
 ```
-apt install git curl -y
-```
 
-```
+```bash
 git clone https://github.com/SN1303/GACS-multitabV2.git
-```
-
-```
 cd GACS-multitabV2
 ```
 
@@ -28,19 +42,22 @@ cd GACS-multitabV2
 chmod +x install.sh && ./install.sh
 ```
 
-## kalau sudah ada genieacsnya
+---
 
-```
-cp -r genieacs /usr/lib/node_modules/
+## Update untuk Server GenieACS yang Sudah Terpasang
+
+Jika sudah memiliki instalasi GenieACS sebelumnya dan ingin menerapkan update UI Multi-Tab V2 terbaru:
+
+```bash
+cd /root/GACS-multitabV2
+git pull origin main
+cp genieacs/public/app.js $(npm root -g)/genieacs/public/app.js
+systemctl restart genieacs-ui
 ```
 
-```
-mongorestore --db genieacs --drop db
-```
+> **Catatan**: Setelah restart `genieacs-ui`, lakukan **Hard Refresh** (`Ctrl + Shift + R`) pada browser klien untuk membersihkan cache frontend.
 
-```
-reboot
-```
+---
 
 ## Instalasi Menggunakan Docker (Direkomendasikan)
 
@@ -88,13 +105,13 @@ reboot
    ```
 
 5. **Akses GenieACS**
-   - Web UI: http://localhost:3000
-     - Username: `admin`
-     - Password: `admin` (menu virtualparameter dll di sembunyikan)
-   - API: http://localhost:7557
+   - Web UI: `http://localhost:3000` (atau IP Server Anda)
+     - Username default: `admin`
+     - Password default: `admin`
+   - API NBI: `http://localhost:7557`
    - CWMP (TR-069): `http://your-server-ip:7547`
 
-### Perintah Penting
+### Perintah Penting Docker
 
 ```bash
 # Menjalankan perintah di dalam container
@@ -106,104 +123,23 @@ docker-compose logs -f
 # Menghentikan semua layanan
 docker-compose down
 
-# Backup database
-./backup-db.sh
-
 # Restart layanan
 docker-compose restart
 ```
 
-### Variabel Lingkungan
+---
 
-Anda dapat menyesuaikan konfigurasi melalui environment variables di file `.env`:
+## Konfigurasi Port Default
 
-```env
-# Kredensial MongoDB
-MONGO_INITDB_ROOT_USERNAME=genieacs
-MONGO_INITDB_ROOT_PASSWORD=genieacs
-MONGO_INITDB_DATABASE=genieacs
+| Layanan | Port | Keterangan |
+|---|---|---|
+| **GenieACS UI** | `3000` | Tampilan Web GUI Frontend |
+| **GenieACS CWMP** | `7547` | Port koneksi TR-069 dari ONT |
+| **GenieACS NBI (API)** | `7557` | Northbound API untuk automasi & preset |
+| **GenieACS FS** | `7567` | File server untuk firmware update |
 
-# Konfigurasi GenieACS
-GENIEACS_UI_JWT_SECRET=your-secure-secret
-GENIEACS_UI_INITIAL_USER=admin
-GENIEACS_UI_INITIAL_PASSWORD=admin
+---
 
-# Opsional: Sesuaikan dengan kebutuhan
-# NODE_ENV=production
-# GENIEACS_EXT_DIR=/opt/genieacs/ext
-```
+## Lisensi & Kontribusi
 
-### Menggunakan Docker Desktop
-
-#### Cara 1: Menggunakan Docker Dashboard (GUI)
-
-1. Buka Docker Desktop
-2. Klik tombol "Build" di sidebar kiri
-3. Pilih direktori proyek GenieACS
-4. Beri nama image (contoh: `genieacs:latest`)
-5. Klik "Build"
-
-#### Cara 2: Menggunakan Terminal Docker Desktop
-
-1. Buka terminal di Docker Desktop (atau terminal biasa)
-2. Arahkan ke direktori proyek:
-   ```bash
-   cd /path/ke/multitab
-   ```
-3. Build image:
-   ```bash
-   docker build -t genieacs:latest .
-   ```
-
-#### Cara 3: Menggunakan Docker Compose (Direkomendasikan)
-
-1. Buka terminal di direktori proyek
-2. Jalankan perintah berikut untuk membangun dan menjalankan:
-
-   ```bash
-   # Build dan jalankan semua service
-   docker-compose up -d --build
-
-   # Atau untuk service tertentu (contoh: hanya genieacs)
-   docker-compose up -d --build genieacs
-   ```
-
-#### Memeriksa Image yang Telah Dibangun
-
-```bash
-# Melihat daftar image
-docker images
-
-# Melihat container yang sedang berjalan
-docker ps
-
-# Melihat log container
-docker logs <container_id>
-```
-
-#### Menjalankan Container dari Image yang Telah Dibangun
-
-```bash
-# Menjalankan container
-docker run -d --name genieacs -p 3000:3000 -p 7547:7547 -p 7557:7557 -p 7567:7567 genieacs:latest
-
-# Atau gunakan docker-compose
-docker-compose up -d
-```
-
-#### Troubleshooting
-
-- Jika build gagal, periksa log build:
-  ```bash
-  docker-compose logs --tail=100 -f
-  ```
-- Jika port sudah digunakan, hentikan service yang menggunakan port tersebut atau ubah port di `docker-compose.yml`
-- Pastikan Docker Desktop sudah berjalan dengan baik (ikon Docker di system tray berwarna putih)
-
-## Lisensi
-
-2025 ALIJAYA ACS MULTITAB### SILAHKAN YANG INGIN BERBAGI
-
-<!--
-#### ![Image](https://github.com/user-attachments/assets/724e5ac2-626e-4f2d-bd1f-1265b70b544f)
--->
+Silakan berkontribusi atau menyesuaikan untuk kebutuhan jaringan FTTH masing-masing.
