@@ -14,8 +14,8 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
 
 2. **Indikator Status Warna Visual**:
    - **PON Mode**: 🔵 EPON (Biru), 🟢 GPON (Hijau), 🟠 Ethernet/Converter (Orange).
-   - **Optic RX Power**: 🟢 Bagus (< -23 dBm), 🟡 Sedang (-23 s/d -26 dBm), 🔴 Kritis (>= -26 dBm).
-   - **Device Temperature**: 🟢 Adem (<= 45 °C), 🟡 Hangat (46 - 60 °C), 🔴 Panas (> 60 °C).
+   - **Optic RX Power**: 🟢 Bagus (> -23 dBm), 🟡 Sedang (-23 s/d -27 dBm), 🔴 Kritis (<= -27 dBm).
+   - **Device Temperature**: 🟢 Adem (<= 45 °C), 🟡 Anget (46 - 60 °C), 🟠 Panas (61 - 70 °C), 🔴 Overheat (> 70 °C).
 
 3. **Halaman Perangkat (`/devices`) Efisien**:
    - Kolom tabel ringkas & padat tanpa duplikasi.
@@ -24,6 +24,11 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
 
 4. **Kredensial Akun Web GUI Dinamis**:
    - Terintegrasi langsung dengan `VirtualParameters.superAdmin/superPassword` dan `userAdmin/userPassword` untuk berbagai tipe ONT ZTE, Huawei, dan Fiberhome.
+
+5. **Engine Virtual Parameters Multi-Vendor Cerdas**:
+   - Mendukung deteksi otomatis multi-vendor: **ZTE (F609, F670, F660, F663, F460, dll), Huawei, FiberHome, V-SOL, C-Data, D-Link, HSGQ, TDTC, GGCLink, CMHI, Alcatel-Lucent (ALCL), dan MikroTik**.
+   - Dilengkapi konversi suhu chip regresi linier dan multi-path detection untuk Optical RX Power (15 jalur data model TR-069).
+   - Overview Dashboard otomatis mengelompokkan perangkat berdasarkan model seri dan merk secara akurat.
 
 ---
 
@@ -46,16 +51,24 @@ chmod +x install.sh && ./install.sh
 
 ## Update untuk Server GenieACS yang Sudah Terpasang
 
-Jika sudah memiliki instalasi GenieACS sebelumnya dan ingin menerapkan update UI Multi-Tab V2 terbaru:
+Jika sudah memiliki instalasi GenieACS sebelumnya dan ingin menerapkan update UI Multi-Tab V2, Virtual Parameters multi-model, serta perbaikan rentang Optical RX terbaru:
 
 ```bash
 cd /root/GACS-multitabV2
 git pull origin main
-cp genieacs/public/app.js $(npm root -g)/genieacs/public/app.js
-systemctl restart genieacs-ui
+
+# Update konfigurasi database (hanya memperbarui config dan virtualParameters, aman untuk data perangkat)
+mongorestore --db genieacs --collection virtualParameters --drop db/virtualParameters.bson
+mongorestore --db genieacs --collection config --drop db/config.bson
+
+# Update file UI frontend jika ada perubahan
+cp -r genieacs/public/* $(npm root -g)/genieacs/public/
+
+# Restart layanan GenieACS
+systemctl restart genieacs-{cwmp,nbi,ui,fs}
 ```
 
-> **Catatan**: Setelah restart `genieacs-ui`, lakukan **Hard Refresh** (`Ctrl + Shift + R`) pada browser klien untuk membersihkan cache frontend.
+> **Catatan**: Setelah restart layanan, lakukan **Hard Refresh** (`Ctrl + Shift + R` atau `Ctrl + F5`) pada browser klien untuk membersihkan cache frontend.
 
 ---
 
