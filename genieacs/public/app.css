@@ -961,6 +961,7 @@ body {
 }
 
 #header>.logo {
+    order: 1;
     display: flex;
     align-items: center;
     position: relative;
@@ -999,6 +1000,7 @@ body {
 }
 
 #header>nav {
+    order: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1062,6 +1064,7 @@ body {
 }
 
 #header>.user-menu {
+    order: 3;
     margin-left: auto;
     display: flex;
     align-items: center;
