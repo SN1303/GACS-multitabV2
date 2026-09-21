@@ -1914,179 +1914,18 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
 }
 
 /* ==========================================================
-   CENTERED MODERN LAYOUT FOR DEVICES, FAULTS & ADMIN PAGES
+   CENTERED CONTAINER (STANDARD GENIEACS STYLING)
    ========================================================== */
 
 #content-wrapper {
     display: flex !important;
     justify-content: center !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    padding: 20px 24px 40px !important;
-    box-sizing: border-box !important;
 }
 
 #content {
-    width: 100% !important;
-    max-width: 1440px !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-}
-
-/* When side-menu (Admin section) is present */
-#side-menu {
-    width: 220px !important;
-    min-width: 220px !important;
-    margin-right: 24px !important;
-    flex-shrink: 0 !important;
-}
-
-#side-menu>ul {
-    background: rgba(15, 23, 50, 0.5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-#side-menu>ul>li>a {
-    margin: 4px 0 !important;
-    padding: 10px 14px !important;
-    border-radius: 8px !important;
-    background: transparent !important;
-    color: #94a3b8 !important;
-    font-size: 0.88rem !important;
-    font-weight: 600 !important;
-    transition: all 0.2s ease !important;
-}
-
-#side-menu>ul>li>a:hover {
-    background: rgba(56, 189, 248, 0.12) !important;
-    color: #38bdf8 !important;
-    transform: translateX(3px);
-}
-
-#side-menu>ul>li.active>a {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35) !important;
-}
-
-/* Search / Filter bar centered & modern */
-.filter {
-    display: flex !important;
-    align-items: center !important;
-    margin-bottom: 16px !important;
-    gap: 10px !important;
-}
-
-.filter>input {
-    background: rgba(15, 23, 50, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 8px !important;
-    color: #e2e8f0 !important;
-    padding: 8px 14px !important;
-    font-size: 0.9rem !important;
-    width: 100% !important;
-    max-width: 480px !important;
-    box-sizing: border-box !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.filter>input:focus {
-    border-color: #38bdf8 !important;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
-    outline: none !important;
-}
-
-/* Modern Centered Tables for Devices, Faults & Admin */
-table.table {
-    width: 100% !important;
-    background: rgba(15, 23, 50, 0.6) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    border-spacing: 0 !important;
-}
-
-table.table th {
-    background: rgba(2, 132, 199, 0.15) !important;
-    color: #38bdf8 !important;
-    font-weight: 700 !important;
-    font-size: 0.85rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    padding: 12px 14px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: none !important;
-}
-
-table.table td {
-    padding: 10px 14px !important;
-    color: #cbd5e1 !important;
-    font-size: 0.88rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-}
-
-table.table.highlight>tbody>tr:hover {
-    background-color: rgba(56, 189, 248, 0.08) !important;
-}
-
-table.table tfoot td {
-    padding: 12px 14px !important;
-    color: #94a3b8 !important;
-    font-size: 0.82rem !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-/* Action buttons modern */
-.actions-bar {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    margin: 14px 0 !important;
-}
-
-:is(input[type=button], button).primary {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-    color: #ffffff !important;
-    border: 1px solid #38bdf8 !important;
-    padding: 6px 14px !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-:is(input[type=button], button).primary:hover:enabled {
-    background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45) !important;
-    transform: translateY(-1px) !important;
-}
-
-:is(input[type=button], button).critical {
-    background: rgba(239, 68, 68, 0.15) !important;
-    color: #fca5a5 !important;
-    border: 1px solid rgba(239, 68, 68, 0.4) !important;
-    padding: 6px 14px !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-:is(input[type=button], button).critical:hover:enabled {
-    background: rgba(239, 68, 68, 0.3) !important;
-    color: #ffffff !important;
-    border-color: #ef4444 !important;
-    transform: translateY(-1px) !important;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
