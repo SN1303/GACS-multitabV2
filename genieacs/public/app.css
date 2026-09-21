@@ -997,14 +997,14 @@ body {
 }
 
 #header>nav {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    order: 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    z-index: 10;
+    position: static;
+    bottom: auto;
+    flex: 1 1 auto;
+    margin: 0 20px;
 }
 
 #header>nav>ul {
