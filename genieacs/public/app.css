@@ -1913,5 +1913,80 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     transition: width 0.6s ease;
 }
 
+/* ==========================================================
+   MOBILE & TABLET RESPONSIVE HEADER
+   ========================================================== */
+@media screen and (max-width: 900px) {
+    #header {
+        flex-wrap: wrap !important;
+        padding: 8px 12px !important;
+        min-height: auto !important;
+        gap: 8px !important;
+        justify-content: space-between !important;
+    }
+
+    #header > .logo {
+        order: 1 !important;
+        flex: 0 0 auto !important;
+        padding: 2px 0 !important;
+    }
+
+    #header > .logo > img {
+        height: 32px !important;
+        max-height: 34px !important;
+    }
+
+    #header > .logo > .version {
+        font-size: 0.65rem !important;
+        padding: 1px 5px !important;
+    }
+
+    #header > .user-menu {
+        order: 2 !important;
+        margin: 0 !important;
+        gap: 8px !important;
+        font-size: 0.8rem !important;
+    }
+
+    #header > .user-menu a,
+    #header > .user-menu button {
+        padding: 4px 10px !important;
+        font-size: 0.76rem !important;
+    }
+
+    #header > nav {
+        order: 3 !important;
+        position: static !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 4px 0 2px 0 !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        justify-content: center !important;
+    }
+
+    #header > nav > ul {
+        width: 100% !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    #header > nav > ul > li {
+        flex: 1 1 auto !important;
+        text-align: center !important;
+    }
+
+    #header > nav > ul > li > :is(a, a:visited, a:hover) {
+        min-width: 0 !important;
+        padding: 6px 8px !important;
+        font-size: 0.78rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /*# sourceMappingURL=app.css.map */
