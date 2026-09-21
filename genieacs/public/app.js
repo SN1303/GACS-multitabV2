@@ -309,6 +309,20 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
     if (labelMap[lbl]) {
       col.label = labelMap[lbl];
     }
+    if (lbl.includes("rx power") || lbl.includes("optic rx")) {
+      if (col.components) {
+        let comps = Object.values(col.components).map(cp => {
+          let clone = Object.assign({}, cp);
+          if (clone.type === "overview-dot") {
+            clone.hideLabel = true;
+          }
+          return clone;
+        });
+        let dot = comps.find(cp => cp.type === "overview-dot");
+        let val = comps.find(cp => cp.type !== "overview-dot");
+        col.components = dot && val ? [dot, val] : comps;
+      }
+    }
     if (lbl.includes("uptime")) {
       uptimeCol = col;
       continue;
