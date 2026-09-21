@@ -1915,3 +1915,79 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
 
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /*# sourceMappingURL=app.css.map */
+/* --- Quick Find Bar --- */
+.quick-find-container {
+    display: flex;
+    align-items: center;
+    margin: 12px 0 16px 0;
+    width: 100%;
+}
+.quick-find-box {
+    display: flex;
+    align-items: center;
+    background: #1e2433;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 3px 6px 3px 12px;
+    width: 100%;
+    max-width: 640px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+}
+.quick-find-box:focus-within {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+    background: #1e293b;
+}
+.quick-find-icon {
+    font-size: 1rem;
+    margin-right: 8px;
+    opacity: 0.75;
+    user-select: none;
+}
+.quick-find-input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #f1f5f9 !important;
+    font-size: 0.92rem !important;
+    padding: 7px 4px !important;
+    box-shadow: none !important;
+}
+.quick-find-input::placeholder {
+    color: #64748b;
+    font-size: 0.88rem;
+}
+.quick-find-clear {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-right: 4px;
+    border-radius: 4px;
+    transition: color 0.15s;
+}
+.quick-find-clear:hover {
+    color: #f43f5e;
+}
+.quick-find-btn {
+    background: #0284c7;
+    color: #ffffff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+}
+.quick-find-btn:hover {
+    background: #0369a1;
+}
+.quick-find-btn:active {
+    transform: scale(0.97);
+}
