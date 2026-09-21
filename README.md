@@ -14,7 +14,7 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
 
 2. **Indikator Status Warna Visual**:
    - **PON Mode**: 🔵 EPON (Biru), 🟢 GPON (Hijau), 🟠 Ethernet/Converter (Orange).
-   - **Optic RX Power**: 🟢 Bagus (> -23 dBm), 🟡 Sedang (-23 s/d -27 dBm), 🔴 Kritis (<= -27 dBm).
+   - **Optic RX Power**: 🟢 Bagus (> -23 dBm), 🟡 Sedang (-23 s/d -24.9 dBm), 🔴 Kritis (<= -25 dBm).
    - **Device Temperature**: 🟢 Adem (<= 45 °C), 🟡 Anget (46 - 60 °C), 🟠 Panas (61 - 70 °C), 🔴 Overheat (> 70 °C).
 
 3. **Halaman Perangkat (`/devices`) Efisien**:
