@@ -346,7 +346,7 @@ function doQuickFind(val) {
     r("");
     return;
   }
-  let prm = val.replace(/"/g, '\\\"');
+  let prm = val.replace(/"/g, '\\"');
   let q = '("VirtualParameters.pppoeUsername" LIKE "%' + prm + '%" OR "DeviceID.SerialNumber" LIKE "%' + prm + '%" OR "DeviceID.ID" LIKE "%' + prm + '%" OR "VirtualParameters.pppoeIP" LIKE "%' + prm + '%" OR "InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID" LIKE "%' + prm + '%" OR "VirtualParameters.MacAddress" LIKE "%' + prm + '%")';
   r(q);
 }
@@ -356,39 +356,25 @@ let quickFindBar = p("div.quick-find-container", [
     p("input.quick-find-input", {
       type: "text",
       placeholder: "Quick Find: Username PPPoE, Serial Number, SSID, WAN IP, MAC...",
-      defaultValue: quickFindVal,
-      oncreate: (vnode) => {
-        if (quickFindVal && vnode.dom) vnode.dom.value = quickFindVal;
-      },
-      oninput: (ev) => {
-        ev.redraw = false;
-        quickFindVal = ev.target.value;
-        window._gacsQuickFind = ev.target.value;
-      },
+      value: quickFindVal,
+      oninput: (ev) => { quickFindVal = ev.target.value; },
       onkeydown: (ev) => {
         if (ev.key === "Enter") {
-          ev.preventDefault();
           doQuickFind(ev.target.value);
         }
       }
     }),
-    p("button.quick-find-clear", {
+    quickFindVal ? p("button.quick-find-clear", {
       type: "button",
       title: "Clear",
-      onclick: (ev) => {
-        let inp = ev.target.parentElement.querySelector("input.quick-find-input");
-        if (inp) inp.value = "";
+      onclick: () => {
         quickFindVal = "";
         doQuickFind("");
       }
-    }, "✕"),
+    }, "✕") : null,
     p("button.quick-find-btn", {
       type: "button",
-      onclick: (ev) => {
-        let inp = ev.target.parentElement.querySelector("input.quick-find-input");
-        let v = inp ? inp.value : quickFindVal;
-        doQuickFind(v);
-      }
+      onclick: () => { doQuickFind(quickFindVal); }
     }, "Search")
   ])
 ]);
