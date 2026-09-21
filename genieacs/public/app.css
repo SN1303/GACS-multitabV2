@@ -1559,11 +1559,16 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
    MODERN DASHBOARD OVERVIEW & ADVANCED CHARTS STYLING
    ========================================================== */
 
-/* Overview Container */
+/* Overview Container - Always Perfectly Centered */
 .page-overview {
-    padding: 20px;
-    max-width: 1350px;
-    margin: 0 auto;
+    padding: 10px 20px 30px;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
 }
 
 .page-overview > h1 {
@@ -1578,6 +1583,7 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    width: 100%;
 }
 
 .page-overview > h1::before,
@@ -1599,7 +1605,9 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     justify-content: center !important;
     align-items: flex-start !important;
     gap: 20px !important;
-    margin-bottom: 24px !important;
+    margin-bottom: 28px !important;
+    width: 100% !important;
+    max-width: 1300px !important;
 }
 
 /* Clean Compact Card (Tanpa Box Gede) */
