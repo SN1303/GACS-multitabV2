@@ -791,12 +791,6 @@ body {
     overflow-y: auto
 }
 
-#header {
-    background-color: #050225;
-    border-bottom: 1px solid var(--color4);
-    overflow: visible;
-    position: relative
-}
 
 #header>.drawer-wrapper {
     position: fixed;
@@ -951,68 +945,151 @@ body {
     border: 1px solid hsl(var(--status-yellow))
 }
 
+#header {
+    background: linear-gradient(180deg, #090e24 0%, #050225 100%);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    position: relative;
+    padding: 0 24px;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
 #header>nav {
-    display: inline-block;
-    overflow: visible;
-    position: absolute;
-    bottom: -1px
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    bottom: auto;
+    margin: 0 auto;
 }
 
 #header>nav>ul {
-    font-weight: 700;
-    display: inline-block;
-    margin: 0 10px;
-    padding: 0
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 #header>nav>ul>li {
-    margin: 0 2px;
-    background-color: var(--color1);
-    display: inline-block;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-top: 1px solid var(--color4);
-    border-left: 1px solid var(--color4);
-    border-right: 1px solid var(--color4);
-    transition: background-color var(--fade)
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+    overflow: hidden;
 }
 
-#header>nav>ul>li:is(.active, :hover) {
-    background-color: #e21818
+#header>nav>ul>li:hover {
+    background-color: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+#header>nav>ul>li.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border-color: #38bdf8;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
 }
 
 #header>nav>ul>li>:is(a, a:visited, a:hover) {
-    display: inline-block;
-    min-width: 140px;
-    color: var(--color4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    color: #e2e8f0;
     text-decoration: none;
     background: none;
-    padding: 8px
+    box-shadow: none;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease;
+}
+
+#header>nav>ul>li.active>:is(a, a:visited, a:hover) {
+    color: #ffffff;
+    font-weight: 700;
 }
 
 #header>.logo {
-    display: inline-block;
-    position: relative
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-shrink: 0;
+    padding: 6px 0;
 }
 
 #header>.logo>img {
-    margin: 10px;
-    height: 75px;
-    vertical-align: top
+    margin: 0 8px 0 0;
+    height: 46px;
+    max-height: 48px;
+    width: auto;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+    transition: transform 0.2s ease;
+}
+
+#header>.logo>img:hover {
+    transform: scale(1.03);
 }
 
 #header>.logo>.version {
-    position: absolute;
-    bottom: -2px;
-    right: 10px;
-    font-family: monospace;
-    font-size: 10px;
-    color: #fff
+    position: static;
+    bottom: auto;
+    right: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.72rem;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 #header>.user-menu {
-    float: right;
-    margin: 5px
+    float: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    font-size: 0.88rem;
+    color: #94a3b8;
+}
+
+#header>.user-menu a,
+#header>.user-menu button {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f87171 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.25) !important;
+    border-radius: 6px;
+    text-decoration: none;
+    box-shadow: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#header>.user-menu a:hover,
+#header>.user-menu button:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+    transform: translateY(-1px);
 }
 
 #side-menu {
