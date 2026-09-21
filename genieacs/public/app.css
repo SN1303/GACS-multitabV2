@@ -1913,20 +1913,5 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
     transition: width 0.6s ease;
 }
 
-/* ==========================================================
-   CENTERED CONTAINER (STANDARD GENIEACS STYLING)
-   ========================================================== */
-
-#content-wrapper {
-    display: flex !important;
-    justify-content: center !important;
-}
-
-#content {
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /*# sourceMappingURL=app.css.map */
