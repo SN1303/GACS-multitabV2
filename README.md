@@ -146,6 +146,7 @@ Proyek ini dibangun dan dikembangkan berkat inspirasi, kontribusi, serta dokumen
 
 - **[GenieACS Core Team](https://genieacs.com/)**: Pembuat dan pengembang utama platform open-source GenieACS TR-069 Auto Configuration Server.
 - **[Bery Indo (beryindo/genieacs)](https://github.com/beryindo/genieacs)**: Basis repositori, instalasi, dan penyedia konsep TR-069 GenieACS untuk komunitas ISP Indonesia.
+- **[R-Tech (R-Tech Support & Script)](https://wa.me/628985560932)**: Pengembangan engine script *Virtual Parameters* multi-vendor cerdas (dukungan multi-model ZTE, V-SOL, C-Data, D-Link, HSGQ, TDTC, Fiberhome, Huawei, Nokia/Alcatel, regresi linier suhu, dan deteksi otomatis PON mode).
 - **[Alijaya Net (alijayanet/genieacs-multitab)](https://github.com/alijayanet/genieacs-multitab)**: Inspirasi awal kustomisasi antarmuka UI Multi-Tab GenieACS.
 - **[Safrin Network (safrinnetwork/GACS-Ubuntu-22.04)](https://github.com/safrinnetwork/GACS-Ubuntu-22.04)**: Kontribusi otomasi script installer dan konfigurasi GenieACS di Ubuntu.
 - **Komunitas TR-069 GenieACS Indonesia**: Rekan-rekan teknisi NOC dan pegiat RT-RW Net yang terus berbagi parameter data model ONT (ZTE, Huawei, Fiberhome, dll).
