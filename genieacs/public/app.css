@@ -950,15 +950,17 @@ body {
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     position: relative;
-    padding: 0 24px;
-    min-height: 64px;
+    padding: 0 16px;
+    min-height: 56px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     box-sizing: border-box;
+    gap: 8px;
 }
 
 #header>.logo {
-    order: 1;
     display: flex;
     align-items: center;
     position: relative;
@@ -968,8 +970,8 @@ body {
 
 #header>.logo>img {
     margin: 0 8px 0 0;
-    height: 42px;
-    max-height: 44px;
+    height: 36px;
+    max-height: 40px;
     width: auto;
     vertical-align: middle;
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
@@ -997,21 +999,22 @@ body {
 }
 
 #header>nav {
-    order: 2;
     display: flex;
     align-items: center;
     justify-content: center;
     position: static;
     bottom: auto;
     flex: 1 1 auto;
-    margin: 0 20px;
+    margin: 0 8px;
 }
 
 #header>nav>ul {
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -1042,13 +1045,13 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 110px;
+    min-width: 84px;
     color: #e2e8f0;
     text-decoration: none;
     background: none;
     box-shadow: none;
-    padding: 8px 16px;
-    font-size: 0.88rem;
+    padding: 7px 12px;
+    font-size: 0.86rem;
     letter-spacing: 0.3px;
     transition: color 0.2s ease;
 }
@@ -1059,12 +1062,10 @@ body {
 }
 
 #header>.user-menu {
-    order: 3;
-    float: none;
-    margin: 0 0 0 auto;
+    margin: 0;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex: 0 0 auto;
     font-size: 0.88rem;
     color: #cbd5e1;
