@@ -2505,7 +2505,9 @@ HTML_CONFIG_PAGE = """<!DOCTYPE html>
             badge.className = 'badge badge-qr';
             badge.textContent = '📷 MENUNGGU SCAN QR CODE';
             qrBox.style.display = 'block';
-            if (data.qr) {
+            if (data.qrImage) {
+              document.getElementById('waQrImg').src = data.qrImage;
+            } else if (data.qr) {
               document.getElementById('waQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(data.qr);
             }
           } else if (data.connection === 'connecting') {
