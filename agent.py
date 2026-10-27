@@ -2247,7 +2247,7 @@ HTML_CONFIG_PAGE = """<!DOCTYPE html>
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
             <div>
               <span id="updateBadge" class="badge badge-open">MEMERIKSA VERSI...</span>
-              <p style="color: var(--text-muted); font-size: 0.84rem; margin-top: 4px;">Repositori: <b style="color: #00e5ff;">github.com/alijayanet/genieacs-multitab-mod</b></p>
+              <p style="color: var(--text-muted); font-size: 0.84rem; margin-top: 4px;">Repositori: <b id="repoUrlDisplay" style="color: #00e5ff;">github.com/SN1303/GACS-multitabV2 (experimental)</b></p>
             </div>
             <button type="button" id="btnCheckUpdate" class="btn-test" style="flex: 0 0 auto; padding: 8px 16px; border-radius: 6px;" onclick="checkSystemUpdate()">🔍 Cek Pembaruan</button>
           </div>
@@ -2357,6 +2357,11 @@ HTML_CONFIG_PAGE = """<!DOCTYPE html>
         if (!data.success) {
           showAlert('❌ ' + (data.error || 'Gagal memeriksa update'), false);
           return;
+        }
+
+        if (data.repo_display) {
+          const rEl = document.getElementById('repoUrlDisplay');
+          if (rEl) rEl.textContent = data.repo_display;
         }
 
         document.getElementById('localCommit').textContent = data.local_commit || '-';
@@ -2873,25 +2878,72 @@ def verify_admin_login(username, password):
 
 
 
-def get_system_update_status():
-    repo_dirs = [
+DEFAULT_REPO_URL = "https://github.com/SN1303/GACS-multitabV2.git"
+DEFAULT_BRANCH = "experimental"
+DEFAULT_REPO_DISPLAY = "github.com/SN1303/GACS-multitabV2 (experimental)"
+
+def get_git_repo_info():
+    """Mencari direktori repositori Git lokal dan informasi branch & remote yang sesuai."""
+    candidate_dirs = [
+        "/root/GACS-multitabV2",
+        "/opt/GACS-multitabV2",
+        os.path.dirname(os.path.abspath(__file__)),
         "/root/genieacs-multitab-mod",
-        "/opt/genieacs-multitab-mod",
-        os.path.dirname(os.path.abspath(__file__))
+        "/opt/genieacs-multitab-mod"
     ]
     repo_dir = None
-    for d in repo_dirs:
+    for d in candidate_dirs:
         if os.path.exists(os.path.join(d, ".git")):
             repo_dir = d
             break
 
     if not repo_dir:
-        target_dir = "/root/genieacs-multitab-mod"
+        repo_dir = "/root/GACS-multitabV2"
+
+    branch = DEFAULT_BRANCH
+    remote_url = DEFAULT_REPO_URL
+
+    if os.path.exists(os.path.join(repo_dir, ".git")):
+        # Periksa remote URL
         try:
-            subprocess.run(["git", "clone", "https://github.com/alijayanet/genieacs-multitab-mod.git", target_dir], timeout=35, check=True)
-            repo_dir = target_dir
+            url_cmd = subprocess.check_output(["git", "-C", repo_dir, "config", "--get", "remote.origin.url"], timeout=5).decode().strip()
+            if url_cmd:
+                # Jika masih mengarah ke repo lama alijayanet, alihkan ke SN1303
+                if "alijayanet" in url_cmd:
+                    try:
+                        subprocess.run(["git", "-C", repo_dir, "remote", "set-url", "origin", DEFAULT_REPO_URL], timeout=5)
+                        url_cmd = DEFAULT_REPO_URL
+                    except Exception:
+                        pass
+                remote_url = url_cmd
+        except Exception:
+            pass
+
+        # Periksa branch aktif
+        try:
+            b_cmd = subprocess.check_output(["git", "-C", repo_dir, "branch", "--show-current"], timeout=5).decode().strip()
+            if b_cmd:
+                branch = b_cmd
+            else:
+                branch = DEFAULT_BRANCH
+        except Exception:
+            branch = DEFAULT_BRANCH
+
+    # Format tampilan repo untuk UI
+    clean_url = remote_url.replace("https://", "").replace("http://", "").replace(".git", "")
+    repo_display = f"{clean_url} ({branch})"
+
+    return repo_dir, remote_url, branch, repo_display
+
+
+def get_system_update_status():
+    repo_dir, remote_url, branch, repo_display = get_git_repo_info()
+
+    if not os.path.exists(os.path.join(repo_dir, ".git")):
+        try:
+            subprocess.run(["git", "clone", "-b", branch, remote_url, repo_dir], timeout=35, check=True)
         except Exception as e:
-            return {"success": False, "error": f"Gagal inisialisasi repositori Git: {e}"}
+            return {"success": False, "error": f"Gagal inisialisasi repositori Git: {e}", "repo_display": repo_display}
 
     try:
         local_hash = subprocess.check_output(["git", "-C", repo_dir, "rev-parse", "HEAD"], timeout=5).decode().strip()
@@ -2899,31 +2951,41 @@ def get_system_update_status():
         local_msg = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%s"], timeout=5).decode().strip()
         local_date = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%cd", "--date=format:%Y-%m-%d %H:%M"], timeout=5).decode().strip()
     except Exception as e:
-        return {"success": False, "error": f"Gagal membaca info commit lokal: {e}"}
+        return {"success": False, "error": f"Gagal membaca info commit lokal: {e}", "repo_display": repo_display}
 
     remote_msg = ""
     remote_date = ""
     commits_behind = 0
+    remote_hash = ""
+    remote_short = ""
     try:
-        subprocess.run(["git", "-C", repo_dir, "fetch", "origin", "main"], timeout=20, check=True)
-        remote_hash = subprocess.check_output(["git", "-C", repo_dir, "rev-parse", "origin/main"], timeout=5).decode().strip()
+        subprocess.run(["git", "-C", repo_dir, "fetch", "origin", branch], timeout=20, check=True)
+        remote_hash = subprocess.check_output(["git", "-C", repo_dir, "rev-parse", f"origin/{branch}"], timeout=5).decode().strip()
         remote_short = remote_hash[:7]
-        remote_msg = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%s", "origin/main"], timeout=5).decode().strip()
-        remote_date = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%cd", "--date=format:%Y-%m-%d %H:%M", "origin/main"], timeout=5).decode().strip()
-        behind_str = subprocess.check_output(["git", "-C", repo_dir, "rev-list", "--count", "HEAD..origin/main"], timeout=5).decode().strip()
+        remote_msg = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%s", f"origin/{branch}"], timeout=5).decode().strip()
+        remote_date = subprocess.check_output(["git", "-C", repo_dir, "log", "-1", "--pretty=%cd", "--date=format:%Y-%m-%d %H:%M", f"origin/{branch}"], timeout=5).decode().strip()
+        behind_str = subprocess.check_output(["git", "-C", repo_dir, "rev-list", "--count", f"HEAD..origin/{branch}"], timeout=5).decode().strip()
         commits_behind = int(behind_str) if behind_str.isdigit() else 0
     except Exception:
         try:
-            ls_out = subprocess.check_output(["git", "ls-remote", "https://github.com/alijayanet/genieacs-multitab-mod.git", "refs/heads/main"], timeout=10).decode().strip()
+            ls_out = subprocess.check_output(["git", "ls-remote", remote_url, f"refs/heads/{branch}"], timeout=10).decode().strip()
             remote_hash = ls_out.split()[0] if ls_out else ""
             remote_short = remote_hash[:7]
         except Exception as e2:
-            return {"success": False, "error": f"Gagal memeriksa GitHub: {e2}", "local_commit": local_short, "local_msg": local_msg, "local_date": local_date}
+            return {
+                "success": False,
+                "error": f"Gagal memeriksa GitHub: {e2}",
+                "repo_display": repo_display,
+                "local_commit": local_short,
+                "local_msg": local_msg,
+                "local_date": local_date
+            }
 
     has_update = bool(local_hash and remote_hash and local_hash != remote_hash)
 
     return {
         "success": True,
+        "repo_display": repo_display,
         "local_commit": local_short,
         "local_hash": local_hash,
         "local_msg": local_msg,
@@ -2938,19 +3000,7 @@ def get_system_update_status():
 
 
 def apply_system_update():
-    repo_dirs = [
-        "/root/genieacs-multitab-mod",
-        "/opt/genieacs-multitab-mod",
-        os.path.dirname(os.path.abspath(__file__))
-    ]
-    repo_dir = None
-    for d in repo_dirs:
-        if os.path.exists(os.path.join(d, ".git")):
-            repo_dir = d
-            break
-
-    if not repo_dir:
-        repo_dir = "/root/genieacs-multitab-mod"
+    repo_dir, remote_url, branch, repo_display = get_git_repo_info()
 
     logs = []
     def log(msg):
@@ -2958,87 +3008,103 @@ def apply_system_update():
         logger.info(f"[UPDATER] {msg}")
 
     try:
-        log("🔄 [1/5] Mengambil pembaruan terbaru dari GitHub...")
+        log(f"🔄 [1/5] Mengambil pembaruan dari {repo_display}...")
         if not os.path.exists(os.path.join(repo_dir, ".git")):
-            cmd = subprocess.run(["git", "clone", "https://github.com/alijayanet/genieacs-multitab-mod.git", repo_dir], capture_output=True, text=True, timeout=40)
+            cmd = subprocess.run(["git", "clone", "-b", branch, remote_url, repo_dir], capture_output=True, text=True, timeout=45)
             if cmd.stdout.strip(): log(cmd.stdout.strip())
             if cmd.stderr.strip(): log(cmd.stderr.strip())
         else:
-            cmd = subprocess.run(["git", "-C", repo_dir, "fetch", "origin", "main"], capture_output=True, text=True, timeout=25)
+            cmd = subprocess.run(["git", "-C", repo_dir, "fetch", "origin", branch], capture_output=True, text=True, timeout=25)
             if cmd.stdout.strip(): log(cmd.stdout.strip())
             if cmd.stderr.strip(): log(cmd.stderr.strip())
-            cmd = subprocess.run(["git", "-C", repo_dir, "reset", "--hard", "origin/main"], capture_output=True, text=True, timeout=10)
+            cmd = subprocess.run(["git", "-C", repo_dir, "reset", "--hard", f"origin/{branch}"], capture_output=True, text=True, timeout=10)
             if cmd.stdout.strip(): log(cmd.stdout.strip())
             if cmd.stderr.strip(): log(cmd.stderr.strip())
 
-        log("📦 [2/5] Memperbarui script Agent (/opt/genieacs-agent/agent.py)...")
+        log("📦 [2/5] Memperbarui script Agent & WhatsApp Gateway...")
+        import shutil
         src_agent = os.path.join(repo_dir, "agent.py")
         if os.path.exists(src_agent):
-            import shutil
             shutil.copy2(src_agent, "/opt/genieacs-agent/agent.py")
             os.chmod("/opt/genieacs-agent/agent.py", 0o755)
-            log("  ✓ agent.py berhasil diperbarui.")
+            log("  ✓ /opt/genieacs-agent/agent.py berhasil diperbarui.")
 
         src_cli = os.path.join(repo_dir, "set-bot.py")
         if os.path.exists(src_cli):
-            import shutil
             shutil.copy2(src_cli, "/usr/local/bin/set-bot")
             os.chmod("/usr/local/bin/set-bot", 0o755)
+            if os.path.exists("/opt/genieacs-agent"):
+                shutil.copy2(src_cli, "/opt/genieacs-agent/set-bot.py")
             log("  ✓ set-bot CLI berhasil diperbarui.")
 
-        src_wa = os.path.join(repo_dir, "whatsapp", "whatsapp-bot.mjs")
-        if not os.path.exists(src_wa):
-            src_wa = os.path.join(repo_dir, "whatsapp-bot.mjs")
-        if os.path.exists(src_wa):
-            import shutil
-            shutil.copy2(src_wa, "/opt/genieacs-agent/whatsapp-bot.mjs")
-            os.chmod("/opt/genieacs-agent/whatsapp-bot.mjs", 0o755)
-            log("  ✓ whatsapp-bot.mjs berhasil diperbarui.")
+        src_wa_dir = os.path.join(repo_dir, "whatsapp")
+        if os.path.exists(src_wa_dir) and os.path.isdir(src_wa_dir):
+            for item in os.listdir(src_wa_dir):
+                s = os.path.join(src_wa_dir, item)
+                d = os.path.join("/opt/genieacs-agent", item)
+                if item == "auth_info_baileys":
+                    continue  # jangan overwrite sesi WA aktif
+                if os.path.isdir(s):
+                    if not os.path.exists(d):
+                        shutil.copytree(s, d)
+                else:
+                    shutil.copy2(s, d)
+            log("  ✓ Modul WhatsApp Gateway berhasil diperbarui.")
 
-        log("🎨 [3/5] Memeriksa & memperbarui antarmuka GenieACS & Peta ODP...")
-        tar_file = os.path.join(repo_dir, "genieacs_ui_mod.tar.gz")
-        for node_dir in ["/usr/lib/node_modules", "/usr/local/lib/node_modules"]:
+        log("🎨 [3/5] Memperbarui antarmuka GenieACS Multitab & Database...")
+        node_module_dirs = ["/usr/lib/node_modules", "/usr/local/lib/node_modules"]
+        try:
+            npm_root = subprocess.check_output(["npm", "root", "-g"], timeout=5).decode().strip()
+            if npm_root and npm_root not in node_module_dirs:
+                node_module_dirs.insert(0, npm_root)
+        except Exception:
+            pass
+
+        src_genieacs_pub = os.path.join(repo_dir, "genieacs", "public")
+        for node_dir in node_module_dirs:
             genie_target = os.path.join(node_dir, "genieacs")
             if os.path.exists(genie_target):
-                if os.path.exists(tar_file):
-                    tar_cmd = subprocess.run(["tar", "-zxf", tar_file, "-C", node_dir + "/"], capture_output=True, text=True, timeout=30)
-                    if tar_cmd.returncode == 0:
-                        log(f"  ✓ genieacs_ui_mod.tar.gz diekstrak ke {node_dir}/.")
-                pub = os.path.join(genie_target, "public")
-                if os.path.exists(pub):
-                    peta_src = os.path.join(repo_dir, "public", "peta.html")
-                    app_src = os.path.join(repo_dir, "public", "app.js")
-                    if os.path.exists(peta_src):
-                        shutil.copy2(peta_src, os.path.join(pub, "peta.html"))
-                        log("  ✓ peta.html berhasil diperbarui.")
-                    if os.path.exists(app_src):
-                        shutil.copy2(app_src, os.path.join(pub, "app.js"))
-                        log("  ✓ app.js berhasil diperbarui.")
+                pub_target = os.path.join(genie_target, "public")
+                if os.path.exists(src_genieacs_pub) and os.path.exists(pub_target):
+                    for f in os.listdir(src_genieacs_pub):
+                        sf = os.path.join(src_genieacs_pub, f)
+                        df = os.path.join(pub_target, f)
+                        if os.path.isfile(sf):
+                            shutil.copy2(sf, df)
+                    log(f"  ✓ GenieACS public assets diperbarui di {pub_target}.")
 
-        # Update VirtualParameters (VlanID, pppoeUsername) & cache di MongoDB
+        # Restore MongoDB konfigurasi (config, presets, provisions, virtualParameters, permissions)
+        db_dir = os.path.join(repo_dir, "db")
+        if os.path.exists(db_dir):
+            collections_to_restore = ["config", "presets", "provisions", "virtualParameters", "permissions"]
+            for col in collections_to_restore:
+                bson_f = os.path.join(db_dir, f"{col}.bson")
+                if os.path.exists(bson_f):
+                    try:
+                        subprocess.run(["mongorestore", "--db", "genieacs", "--collection", col, "--drop", bson_f], timeout=15, check=True)
+                        log(f"  ✓ Restore collection '{col}' berhasil.")
+                    except Exception as e_mr:
+                        log(f"  ⚠️ mongorestore {col}: {e_mr}")
+
+        # Hapus cache UI di MongoDB agar tampilan langsung termuat segar
         try:
             db = get_db()
             if db is not None:
-                vp_vlan = db.virtualParameters.find_one({"_id": "VlanID"})
-                if not vp_vlan:
-                    vlan_script = 'let vlan = "-";\nlet p = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.X_CT-COM_VlanID", {value: 1});\nif (p.value && p.value[0]) vlan = p.value[0];\nelse {\n  p = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.X_CMCC_VLANIDMark", {value: 1});\n  if (p.value && p.value[0]) vlan = p.value[0];\n  else {\n    p = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.X_HW_VLAN", {value: 1});\n    if (p.value && p.value[0]) vlan = p.value[0];\n    else {\n      p = declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.*.WANPPPConnection.*.VLANID", {value: 1});\n      if (p.value && p.value[0]) vlan = p.value[0];\n    }\n  }\n}\nreturn {writable: true, value: [vlan, "xsd:string"]};'
-                    db.virtualParameters.insert_one({"_id": "VlanID", "script": vlan_script})
-                    log("  ✓ VirtualParameters.VlanID berhasil dibuat di MongoDB.")
-                vp_user = db.virtualParameters.find_one({"_id": "pppoeUsername"})
-                if vp_user and "writable: true" not in vp_user.get("script", ""):
-                    new_script = vp_user.get("script", "").replace("return {writable: false", "return {writable: true")
-                    db.virtualParameters.update_one({"_id": "pppoeUsername"}, {"$set": {"script": new_script}})
-                    log("  ✓ VirtualParameters.pppoeUsername disetel writable di MongoDB.")
                 db.config.delete_one({"_id": "ui-local-cache-hash"})
+                log("  ✓ Cache UI MongoDB dibersihkan.")
         except Exception as e_db:
-            log(f"  ⚠️ MongoDB config update: {e_db}")
+            log(f"  ⚠️ MongoDB cache clean: {e_db}")
 
-        log("🔄 [4/5] Me-restart service genieacs-ui...")
-        subprocess.run(["systemctl", "restart", "genieacs-ui"], check=True, timeout=15)
-        log("  ✓ genieacs-ui aktif.")
+        log("🔄 [4/5] Me-restart service genieacs-ui, cwmp, nbi, fs & whatsapp...")
+        try:
+            subprocess.run(["systemctl", "restart", "genieacs-ui", "genieacs-cwmp", "genieacs-nbi", "genieacs-fs"], check=True, timeout=15)
+            log("  ✓ Layanan GenieACS aktif.")
+        except Exception as e_srv:
+            log(f"  ⚠️ Restart genieacs services: {e_srv}")
 
         try:
             subprocess.run(["systemctl", "try-restart", "genieacs-whatsapp"], timeout=10)
+            log("  ✓ Layanan genieacs-whatsapp aktif.")
         except Exception:
             pass
 
