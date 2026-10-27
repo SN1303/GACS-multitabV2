@@ -1009,6 +1009,35 @@
               parameter: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MaxAddress
             - label: "'DNS Server'"
               parameter: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.DNSServers
+    - element: "'h2'"
+      type: "'container'"
+      components:
+        - "'LAN Host Devices'"
+    - type: "'container'"
+      components:
+        - type: "'parameter-list'"
+          parameters:
+            - element: "'span.inform'"
+              label: "'Connected Host Devices'"
+              type: "'container'"
+              components:
+                - type: "'summon-button'"
+                  parameters:
+                    - InternetGatewayDevice.LANDevice.*.Hosts.Host
+        - label: "'Connected Hosts'"
+          parameter: InternetGatewayDevice.LANDevice.1.Hosts.Host
+          type: "'parameter-table'"
+          childParameters:
+            - label: "'Host Name'"
+              parameter: HostName
+            - label: "'IP Address'"
+              parameter: IPAddress
+            - label: "'MAC Address'"
+              parameter: MACAddress
+            - label: "'Interface'"
+              parameter: InterfaceType
+            - label: "'Active'"
+              parameter: Active
 - label: "'WLAN'"
   route: "'wlan'"
   components:
@@ -1220,6 +1249,15 @@
               parameter: AutoChannelEnable
             - label: "'Power'"
               parameter: TransmitPower
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WiFi Clients (2.4GHz & 5GHz)'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration.*.AssociatedDevice
     - element: "'table'"
       type: "'container'"
       components:
@@ -1265,6 +1303,42 @@
                     - chart: "'online'"
                       label: "'Status'"
                       type: "'overview-dot'"
+                - label: "'WiFi Clients Information SSID5 (5GHz)'"
+                  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.5.AssociatedDevice
+                  type: "'parameter-table'"
+                  childParameters:
+                    - label: "'RSSI'"
+                      parameter: COALESCE(X_HW_RSSI,AssociatedDeviceRssi,X_ZTE-COM_RSSI)
+                    - label: "'Mode'"
+                      parameter: COALESCE(X_HW_WorkingMode,X_CT-COM_Mode, X_ZTE-COM_WLAN_ClientMode)
+                    - label: "'Descriptions'"
+                      parameter: COALESCE(X_HW_AssociatedDevicedescriptions,
+                        X_ZTE-COM_AssociatedDeviceName,X_ZTE-COM_DeviceName)
+                    - label: "'IP Address'"
+                      parameter: AssociatedDeviceIPAddress
+                    - label: "'MAC Address'"
+                      parameter: AssociatedDeviceMACAddress
+                    - chart: "'online'"
+                      label: "'Status'"
+                      type: "'overview-dot'"
+                - label: "'WiFi Clients Information SSID6 (5GHz)'"
+                  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.6.AssociatedDevice
+                  type: "'parameter-table'"
+                  childParameters:
+                    - label: "'RSSI'"
+                      parameter: COALESCE(X_HW_RSSI,AssociatedDeviceRssi,X_ZTE-COM_RSSI)
+                    - label: "'Mode'"
+                      parameter: COALESCE(X_HW_WorkingMode,X_CT-COM_Mode, X_ZTE-COM_WLAN_ClientMode)
+                    - label: "'Descriptions'"
+                      parameter: COALESCE(X_HW_AssociatedDevicedescriptions,
+                        X_ZTE-COM_AssociatedDeviceName,X_ZTE-COM_DeviceName)
+                    - label: "'IP Address'"
+                      parameter: AssociatedDeviceIPAddress
+                    - label: "'MAC Address'"
+                      parameter: AssociatedDeviceMACAddress
+                    - chart: "'online'"
+                      label: "'Status'"
+                      type: "'overview-dot'"
     - label: "'LAN hosts'"
       parameter: InternetGatewayDevice.LANDevice.1.Hosts.Host
       type: "'parameter-table'"
@@ -1275,6 +1349,10 @@
           parameter: IPAddress
         - label: "'MAC address'"
           parameter: MACAddress
+        - label: "'Interface'"
+          parameter: InterfaceType
+        - label: "'Active'"
+          parameter: Active
     - element: "'div'"
       type: "'container'"
       components:
