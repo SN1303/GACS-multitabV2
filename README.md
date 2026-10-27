@@ -72,9 +72,10 @@ Jika sudah memiliki instalasi GenieACS sebelumnya dan ingin menerapkan update UI
 cd /root/GACS-multitabV2
 git pull origin experimental
 
-# Update konfigurasi database (hanya memperbarui config, provisions, dan virtualParameters; aman untuk data perangkat)
+# Update konfigurasi database (hanya memperbarui config, provisions, permissions, dan virtualParameters; aman untuk data perangkat)
 mongorestore --db genieacs --collection virtualParameters --drop db/virtualParameters.bson
 mongorestore --db genieacs --collection provisions --drop db/provisions.bson
+mongorestore --db genieacs --collection permissions --drop db/permissions.bson
 mongorestore --db genieacs --collection config --drop db/config.bson
 
 # Update file UI frontend & style

@@ -247,7 +247,7 @@ install_multitab_and_restore() {
         fi
 
         if command -v mongorestore &> /dev/null; then
-            for col in config presets provisions virtualParameters files; do
+            for col in config presets provisions virtualParameters files permissions; do
                 if [ -f "$SCRIPT_DIR/db/${col}.bson" ]; then
                     mongorestore --db genieacs --collection "$col" --drop "$SCRIPT_DIR/db/${col}.bson"
                 fi
