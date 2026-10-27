@@ -1954,3 +1954,220 @@ div.tab>ul>li>:is(a, a:visited, a:hover) {
 
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /*# sourceMappingURL=app.css.map */
+
+/* THEME TOGGLE BUTTON & SMOOTH TRANSITIONS                                   */
+/* ========================================================================== */
+body, #header, #side-menu, div.tab>ul>li, table.table>tbody>tr {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-theme-toggle {
+    margin-right: 12px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* In default light theme */
+body.theme-default .btn-theme-toggle {
+    background-color: var(--color1);
+    color: var(--color4);
+    border: 1px solid var(--color2);
+}
+body.theme-default .btn-theme-toggle:hover {
+    background-color: var(--color3);
+    border-color: var(--color4);
+}
+
+/* In dark theme */
+body.theme-dark .btn-theme-toggle,
+body:not(.theme-default) .btn-theme-toggle {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #f1f5f9;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+body.theme-dark .btn-theme-toggle:hover,
+body:not(.theme-default) .btn-theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+/* ========================================================================== */
+/* DEFAULT / LIGHT THEME STYLES (ORIGINAL GENIEACS WHEN body.theme-default)   */
+/* ========================================================================== */
+body.theme-default {
+    background-color: #ffffff !important;
+    color: var(--color5) !important;
+    font-family: sans-serif !important;
+}
+
+body.theme-default input,
+body.theme-default button,
+body.theme-default select,
+body.theme-default option,
+body.theme-default textarea {
+    outline-color: var(--color4) !important;
+    font-family: sans-serif !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default #header {
+    background-color: #f2eddf !important;
+    border-bottom: 1px solid var(--color1) !important;
+}
+
+body.theme-default #header>nav>ul>li {
+    background-color: var(--color1) !important;
+    border-top: 1px solid var(--color1) !important;
+    border-left: 1px solid var(--color1) !important;
+    border-right: 1px solid var(--color1) !important;
+}
+
+body.theme-default #header>nav>ul>li:is(.active, :hover) {
+    background-color: #fff !important;
+}
+
+body.theme-default #header>.drawer-wrapper>.drawer {
+    background-color: #ffffffe6 !important;
+}
+
+body.theme-default #header>.drawer-wrapper>.notifications-wrapper>.notification {
+    background-color: #ffffffe6 !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default #header>.logo>img {
+    height: 56px !important;
+}
+
+body.theme-default #header>.logo>.version {
+    bottom: 5px !important;
+    color: #666 !important;
+}
+
+body.theme-default #side-menu>ul>li>a {
+    background-color: var(--color3) !important;
+    color: var(--color5) !important;
+    box-shadow: none !important;
+}
+
+body.theme-default #side-menu>ul>li>a:hover {
+    background-color: var(--color4) !important;
+    color: #fff !important;
+}
+
+body.theme-default #side-menu>ul>li.active>a {
+    background-color: #046380 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(4, 99, 128, 0.3) !important;
+}
+
+body.theme-default a {
+    color: var(--color4) !important;
+}
+
+body.theme-default a:visited {
+    color: var(--color4) !important;
+}
+
+body.theme-default a:hover {
+    color: #fff !important;
+    background-color: var(--color4) !important;
+    box-shadow: none !important;
+}
+
+body.theme-default table.table.highlight>thead>tr>th {
+    color: var(--color4) !important;
+    border-bottom: 2px solid var(--color4) !important;
+    box-shadow: none !important;
+}
+
+body.theme-default table.table.highlight>tbody>tr>td {
+    border-bottom: 1px dotted var(--color1) !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default table.table.highlight>tbody>tr:hover {
+    background-color: var(--color3) !important;
+}
+
+body.theme-default table.table tbody>tr.empty {
+    color: var(--disabled) !important;
+}
+
+body.theme-default h1 {
+    color: var(--color4) !important;
+    font-size: 130% !important;
+}
+
+body.theme-default h2 {
+    color: var(--color5) !important;
+    font-size: 120% !important;
+}
+
+body.theme-default h3 {
+    color: var(--color5) !important;
+    font-size: 110% !important;
+    font-weight: normal !important;
+}
+
+body.theme-default :is(input[type=button], button).primary {
+    border: 1px solid var(--color1) !important;
+    background-color: var(--color3) !important;
+    color: var(--color4) !important;
+    box-shadow: none !important;
+}
+
+body.theme-default .CodeMirror,
+body.theme-default textarea,
+body.theme-default select,
+body.theme-default input {
+    border: 1px solid var(--color1) !important;
+    background-color: var(--color3) !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default .all-parameters>.parameter-list>table>tbody>tr:hover {
+    background-color: var(--color3) !important;
+}
+
+body.theme-default .overlay-wrapper>.overlay {
+    background-color: #fff !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default .autocomplete {
+    background-color: #ffffffe6 !important;
+    color: var(--color5) !important;
+}
+
+body.theme-default .autocomplete>.suggestion:is(.selected, :hover) {
+    background-color: var(--color3) !important;
+}
+
+body.theme-default div.tab>div.tab_content {
+    border-top: 1px solid var(--color1) !important;
+}
+
+body.theme-default div.tab>ul>li {
+    background-color: var(--color1) !important;
+    border-top: 1px solid var(--color1) !important;
+    border-left: 1px solid var(--color1) !important;
+    border-right: 1px solid var(--color1) !important;
+}
+
+body.theme-default div.tab>ul>li:is(.active, :hover) {
+    background-color: #ffffff !important;
+}
+
+body.theme-default div.tab>ul>li>:is(a, a:visited, a:hover) {
+    color: var(--color4) !important;
+}
