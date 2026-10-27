@@ -365,10 +365,71 @@ install_multitab_and_restore() {
         echo -e "${RED}⚠️ Direktori '$SCRIPT_DIR/db' tidak ditemukan!${NC}"
     fi
 
+    # Pasang GenieACS AI Agent & WhatsApp Baileys Gateway jika ada
+    if [ -f "$SCRIPT_DIR/agent.py" ] && [ -d "$SCRIPT_DIR/whatsapp" ]; then
+        echo -e "${YELLOW}-> Memasang GenieACS AI Agent & WhatsApp Gateway...${NC}"
+        apt-get install -y python3-requests python3-pymongo 2>/dev/null || true
+        mkdir -p /opt/genieacs-agent
+        cp -f "$SCRIPT_DIR/agent.py" /opt/genieacs-agent/agent.py
+        chmod +x /opt/genieacs-agent/agent.py
+        if [ -f "$SCRIPT_DIR/set-bot.py" ]; then
+            cp -f "$SCRIPT_DIR/set-bot.py" /opt/genieacs-agent/set-bot.py
+            chmod +x /opt/genieacs-agent/set-bot.py
+            ln -sf /opt/genieacs-agent/set-bot.py /usr/local/bin/set-bot
+        fi
+        cp -rf "$SCRIPT_DIR/whatsapp/"* /opt/genieacs-agent/
+        if command -v npm &> /dev/null; then
+            echo -e "${YELLOW}-> Menginstall dependensi Baileys WhatsApp...${NC}"
+            (cd /opt/genieacs-agent && npm install @whiskeysockets/baileys@7.0.0-rc11 pino@^9.6.0 qrcode@^1.5.4 qrcode-terminal@^0.12.0 --ignore-scripts --no-audit --no-fund 2>/dev/null || true)
+        fi
+
+        cat << 'EOFAGENT' > /etc/systemd/system/genieacs-agent.service
+[Unit]
+Description=GenieACS AI Telegram Agent
+After=network.target mongod.service genieacs-nbi.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/genieacs-agent
+ExecStart=/usr/bin/python3 /opt/genieacs-agent/agent.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOFAGENT
+
+        cat << 'EOFWA' > /etc/systemd/system/genieacs-whatsapp.service
+[Unit]
+Description=GenieACS WhatsApp AI Agent (Baileys Gateway)
+After=network.target mongod.service genieacs-nbi.service genieacs-agent.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/genieacs-agent
+ExecStart=/usr/bin/node --experimental-global-webcrypto /opt/genieacs-agent/whatsapp-bot.mjs
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+EOFWA
+
+        systemctl daemon-reload
+        systemctl enable --now genieacs-agent genieacs-whatsapp 2>/dev/null || true
+        systemctl restart genieacs-agent genieacs-whatsapp 2>/dev/null || true
+        echo -e "${GREEN}✅ Layanan GenieACS AI Agent & WhatsApp Gateway terpasang.${NC}"
+    fi
+
     # Buka Port Firewall UFW
     if command -v ufw &> /dev/null; then
         ufw allow 3000/tcp 2>/dev/null || true
         ufw allow 7547/tcp 2>/dev/null || true
+        ufw allow 7558/tcp 2>/dev/null || true
+        ufw allow 7559/tcp 2>/dev/null || true
     fi
 
     # Restart semua layanan GenieACS
@@ -411,7 +472,17 @@ else
     echo -e "${RED}❌ GenieACS CWMP : STOPPED${NC}"
 fi
 
+if systemctl is-active --quiet genieacs-agent 2>/dev/null; then
+    echo -e "${GREEN}✅ GenieACS AI Agent : RUNNING (Port 7558)${NC}"
+fi
+if systemctl is-active --quiet genieacs-whatsapp 2>/dev/null; then
+    echo -e "${GREEN}✅ WhatsApp Gateway  : RUNNING (Port 7559 / 'set-bot qr')${NC}"
+fi
+
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}🎉 PROSES REINSTALL SELESAI!${NC}"
 echo -e "${GREEN}👉 Akses GenieACS UI Port 3000 : http://${local_ip}:3000${NC}"
+echo -e "${GREEN}👉 Web Bot AI & WA Port 7558   : http://${local_ip}:7558 (atau menu '🤖 Bot AI & WA' di UI)${NC}"
+echo -e "${GREEN}👉 Konfigurasi Bot             : Ketik 'set-bot' di terminal${NC}"
 echo -e "${GREEN}============================================================================${NC}"
+

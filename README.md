@@ -16,26 +16,32 @@ Custom GenieACS UI Multi-Tab untuk manajemen FTTH / ONT (ZTE, Huawei, Fiberhome,
    - **`VlanID` (2-Way Writable)**: Mengubah VLAN ID ONT langsung dari Web GUI tanpa membuka Web ONT. Mendukung otomatis multi-vendor: Huawei (`X_HW_VLAN`), ZTE/ZICG (`X_ZTE-COM_VlanID`, `X_CMCC_VLANIDMark`), Fiberhome/CIOT/RTEG (`X_CT-COM_VlanID`), dan Broadcom/EPON/GPON.
    - **`WlanSSID` (2-Way Writable)**: Mengganti nama WiFi (SSID) ONT langsung dari Web GUI GenieACS.
 
-3. **1-Click Dark Mode & Light Mode Theme**:
+3. **Bot AI & WhatsApp Baileys Gateway Terintegrasi**:
+   - Terintegrasi langsung dengan gateway WhatsApp Baileys (port 7559) dan GenieACS AI Agent Engine (port 7558).
+   - Menu dashboard web **`🤖 Bot AI & WA`** langsung di navbar GenieACS UI (memantau status koneksi, scan QR code WhatsApp, dan log interaksi).
+   - Mendukung perintah WhatsApp & Telegram interaktif untuk teknisi dan pelanggan: cek redaman optical RX, cek IP/status PPPoE, reboot ONT, dan ganti sandi WiFi.
+   - Dilengkapi tool CLI interaktif `set-bot` di terminal server untuk setting token, nomor WhatsApp admin, nama brand, serta scan QR code (`set-bot qr`).
+
+4. **1-Click Dark Mode & Light Mode Theme**:
    - Tombol pengubah tema (`🌙 Dark` / `☀️ Default`) di menu pengguna pojok kanan atas.
    - Preferensi tema tersimpan otomatis di `localStorage` per-browser.
    - Styling kontras tinggi yang nyaman di mata untuk pemantauan NOC.
 
-4. **Dukungan Multi-Vendor Inform (ONT TR-098 & MikroTik TR-181)**:
+5. **Dukungan Multi-Vendor Inform (ONT TR-098 & MikroTik TR-181)**:
    - Provision `inform` secara cerdas membedakan perangkat standar TR-098 (`InternetGatewayDevice.ManagementServer.*`) dan router MikroTik TR-181 (`Device.ManagementServer.*`), mencegah kegagalan sesi TR-069 Fault 9005.
 
-5. **Indikator Status Warna Visual**:
+6. **Indikator Status Warna Visual**:
    - **PON Mode**: 🔵 EPON (Biru), 🟢 GPON (Hijau), 🟠 Ethernet/Converter (Orange).
    - **Optic RX Power**: 🟢 Bagus (> -23 dBm), 🟡 Sedang (-23 s/d -24.9 dBm), 🔴 Kritis (<= -25 dBm).
    - **Device Temperature**: 🟢 Adem (<= 45 °C), 🟡 Anget (46 - 60 °C), 🟠 Panas (61 - 70 °C), 🔴 Overheat (> 70 °C).
 
-6. **Diagnostik Terformat & Ringkas**:
+7. **Diagnostik Terformat & Ringkas**:
    - **`uptimeDevice`**: Format uptime rapi manusiawi (`Xd XX:XX:XX`).
    - **`temp`**: Suhu chip transceiver pintar yang mendukung konversi nilai byte & float.
    - **`userconnected`**: Penghitung otomatis total klien aktif WiFi.
    - Halaman `/devices` efisien dengan penataan kolom optimal dan tombol summon cepat.
 
-7. **Engine Virtual Parameters Multi-Vendor Cerdas**:
+8. **Engine Virtual Parameters Multi-Vendor Cerdas**:
    - Mendukung deteksi otomatis: **ZTE (F609, F670, F660, F663, F460, dll), Huawei, FiberHome, V-SOL, C-Data, D-Link, HSGQ, TDTC, GGCLink, CMHI, Alcatel-Lucent (ALCL), dan MikroTik**.
    - Kredensial SuperAdmin & User dinamis untuk berbagai tipe ONT.
 
@@ -161,6 +167,8 @@ docker-compose restart
 | **GenieACS CWMP**      | `7547` | Port koneksi TR-069 dari ONT           |
 | **GenieACS NBI (API)** | `7557` | Northbound API untuk automasi & preset |
 | **GenieACS FS**        | `7567` | File server untuk firmware update      |
+| **Bot AI Agent**       | `7558` | Web Dashboard & API Agent GenieACS     |
+| **WhatsApp Gateway**   | `7559` | Baileys Gateway status & QR endpoint   |
 
 ---
 
