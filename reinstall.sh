@@ -32,6 +32,13 @@ echo -e "${GREEN}===============================================================
 echo -e "${YELLOW}Script ini akan menghapus instalasi lama secara bersih (Clean Uninstall)${NC}"
 echo -e "${YELLOW}dan menginstal ulang Node.js, MongoDB, GenieACS Multitab V2 & Database.${NC}"
 echo -e "${GREEN}============================================================================${NC}"
+echo -e "${RED}⚠️  PERINGATAN: SELURUH DATABASE GENIEACS AKAN DIHAPUS PERMANEN, termasuk:${NC}"
+echo -e "${RED}   • Semua data perangkat ONT/CPE, tag/lokasi, task, dan fault${NC}"
+echo -e "${RED}   • User, permission, preset, provision, virtual parameter & config buatan sendiri${NC}"
+echo -e "${RED}   ONT akan muncul lagi setelah inform berikutnya, tapi tag & riwayatnya hilang.${NC}"
+echo -e "${YELLOW}   Backup dulu jika perlu: mongodump --db genieacs --out /root/backup-genieacs${NC}"
+echo -e "${YELLOW}   Untuk update tanpa menghapus data perangkat, gunakan: sudo bash install.sh${NC}"
+echo -e "${GREEN}============================================================================${NC}"
 echo -e "${RED}Apakah Anda yakin ingin melakukan Reinstall bersih? (y/n)${NC}"
 read confirmation
 
@@ -199,7 +206,8 @@ GENIEACS_FS_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-fs-access.log
 GENIEACS_UI_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-ui-access.log
 GENIEACS_DEBUG_FILE=/var/log/genieacs/genieacs-debug.yaml
 GENIEACS_EXT_DIR=/opt/genieacs/ext
-GENIEACS_UI_JWT_SECRET=secret
+GENIEACS_NBI_INTERFACE=127.0.0.1
+GENIEACS_UI_JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
 EOF
 
     chown -R genieacs:genieacs /opt/genieacs /var/log/genieacs

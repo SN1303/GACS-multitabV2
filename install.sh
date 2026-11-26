@@ -107,7 +107,7 @@ install_mongodb_docker() {
     docker rm -f mongodb 2>/dev/null || true
     docker run -d --name mongodb \
         --restart unless-stopped \
-        -p 27017:27017 \
+        -p 127.0.0.1:27017:27017 \
         -v mongodb_data:/data/db \
         mongo:5.0
     sleep 5
@@ -174,10 +174,21 @@ install_genieacs() {
     if [ "$BIN_DIR" != "/usr/bin" ] && [ -f "$BIN_DIR/genieacs-cwmp" ]; then
         ln -sf "$BIN_DIR"/genieacs-* /usr/bin/
     fi
+}
+
+# Dijalankan saat install baru maupun update: env, systemd, logrotate selalu disamakan dengan script ini.
+configure_genieacs() {
+    echo -e "${YELLOW}-> Menulis konfigurasi GenieACS (env, systemd, logrotate)...${NC}"
 
     useradd --system --no-create-home --user-group genieacs 2>/dev/null || true
     mkdir -p /opt/genieacs /opt/genieacs/ext /var/log/genieacs
     chown -R genieacs:genieacs /opt/genieacs /var/log/genieacs
+
+    # Pertahankan JWT secret lama supaya user tidak ter-logout; buat acak kalau belum ada / masih default "secret".
+    JWT_SECRET=$(grep -s '^GENIEACS_UI_JWT_SECRET=' /opt/genieacs/genieacs.env | cut -d= -f2-)
+    if [ -z "$JWT_SECRET" ] || [ "$JWT_SECRET" = "secret" ]; then
+        JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
+    fi
 
     cat << EOF > /opt/genieacs/genieacs.env
 GENIEACS_CWMP_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-cwmp-access.log
@@ -186,7 +197,8 @@ GENIEACS_FS_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-fs-access.log
 GENIEACS_UI_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-ui-access.log
 GENIEACS_DEBUG_FILE=/var/log/genieacs/genieacs-debug.yaml
 GENIEACS_EXT_DIR=/opt/genieacs/ext
-GENIEACS_UI_JWT_SECRET=secret
+GENIEACS_NBI_INTERFACE=127.0.0.1
+GENIEACS_UI_JWT_SECRET=${JWT_SECRET}
 EOF
     chown genieacs:genieacs /opt/genieacs/genieacs.env
     chmod 600 /opt/genieacs/genieacs.env
@@ -220,7 +232,7 @@ EOF
 
     systemctl daemon-reload
     systemctl enable --now genieacs-{cwmp,fs,ui,nbi}
-    echo -e "${GREEN}✅ Layanan GenieACS berhasil dikonfigurasi & diaktifkan.${NC}"
+    echo -e "${GREEN}✅ Konfigurasi layanan GenieACS diterapkan & diaktifkan.${NC}"
 }
 
 # ============================================================================
@@ -247,7 +259,7 @@ install_multitab_and_restore() {
         fi
 
         if command -v mongorestore &> /dev/null; then
-            for col in config presets provisions virtualParameters files; do
+            for col in config presets provisions virtualParameters permissions files; do
                 if [ -f "$SCRIPT_DIR/db/${col}.bson" ]; then
                     mongorestore --db genieacs --collection "$col" --drop "$SCRIPT_DIR/db/${col}.bson"
                 fi
@@ -301,13 +313,23 @@ if ! command -v node &> /dev/null; then
     install_nodejs
 fi
 
-if ! systemctl is-active --quiet mongod 2>/dev/null && ! docker ps 2>/dev/null | grep -q mongodb; then
+# Cek "sudah terpasang" (bukan "sedang jalan"): yang terpasang tapi mati cukup dinyalakan, tidak di-install ulang.
+if systemctl list-unit-files mongod.service 2>/dev/null | grep -q '^mongod\.service'; then
+    echo -e "${GREEN}MongoDB sudah terpasang, memastikan service berjalan...${NC}"
+    systemctl enable --now mongod 2>/dev/null || true
+elif docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qx mongodb; then
+    echo -e "${GREEN}MongoDB (Docker) sudah terpasang, memastikan container berjalan...${NC}"
+    docker start mongodb >/dev/null 2>&1 || true
+else
     install_mongodb
 fi
 
-if ! systemctl is-active --quiet genieacs-cwmp 2>/dev/null; then
+if command -v genieacs-cwmp &> /dev/null; then
+    echo -e "${GREEN}GenieACS sudah terpasang, mode UPDATE (paket tidak di-install ulang).${NC}"
+else
     install_genieacs
 fi
+configure_genieacs
 
 install_multitab_and_restore
 

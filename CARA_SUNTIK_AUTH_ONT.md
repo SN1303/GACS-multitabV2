@@ -88,7 +88,7 @@ declare(mgmt + "PeriodicInformInterval", {value: 1}, {value: 300});
 `;
 
 const req = http.request({
-  hostname: '127.0.0.1', // sesuaikan dengan IP server GenieACS
+  hostname: '127.0.0.1', // NBI hanya listen di localhost: jalankan script ini di server GenieACS
   port: 7557,
   path: '/provisions/update_auth',
   method: 'PUT',
