@@ -44,31 +44,61 @@ cd GACS-multitabV2
 ```
 
 ```bash
-chmod +x install.sh && ./install.sh
+chmod +x install.sh && sudo ./install.sh
 ```
+
+### Login Default
+
+| Username | Password    | Role  |
+| -------- | ----------- | ----- |
+| `admin`  | `admin`     | admin |
+
+> ⚠️ **Segera ganti password `admin`** lewat **Admin → Users** setelah instalasi. Password yang sudah diganti tidak akan tertimpa saat update.
 
 ---
 
 ## Update untuk Server GenieACS yang Sudah Terpasang
 
-Jika sudah memiliki instalasi GenieACS sebelumnya dan ingin menerapkan update UI Multi-Tab V2, Virtual Parameters multi-model, serta perbaikan rentang Optical RX terbaru:
+`install.sh` yang sama otomatis masuk **mode UPDATE** jika GenieACS sudah terpasang di server:
 
 ```bash
 cd /root/GACS-multitabV2
 git pull origin main
-
-# Update konfigurasi database (hanya memperbarui config dan virtualParameters, aman untuk data perangkat)
-mongorestore --db genieacs --collection virtualParameters --drop db/virtualParameters.bson
-mongorestore --db genieacs --collection config --drop db/config.bson
-
-# Update file UI frontend jika ada perubahan
-cp -r genieacs/public/* $(npm root -g)/genieacs/public/
-
-# Restart layanan GenieACS
-systemctl restart genieacs-{cwmp,nbi,ui,fs}
+sudo bash install.sh
 ```
 
-> **Catatan**: Setelah restart layanan, lakukan **Hard Refresh** (`Ctrl + Shift + R` atau `Ctrl + F5`) pada browser klien untuk membersihkan cache frontend.
+| Komponen                                                       | Saat update                                                        |
+| -------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Node.js, MongoDB, paket GenieACS                               | Tidak di-install ulang (jika service mati, cukup dinyalakan)       |
+| `genieacs.env`, file systemd, logrotate                        | Ditulis ulang sesuai script, **JWT secret lama dipertahankan**     |
+| UI Multi-Tab (`genieacs/`)                                     | Diperbarui                                                         |
+| Config, Presets, Provisions, Virtual Parameters, Permissions   | **Ditimpa** dengan isi folder `db/`                                |
+| Users                                                          | User lama & password-nya tetap; user baru dari `db/` ditambahkan   |
+| Data perangkat ONT, tag/lokasi, task, fault                    | **Aman, tidak disentuh**                                           |
+
+> **Perhatian**: perubahan Config/Preset/Provision/Virtual Parameter yang dibuat langsung lewat UI di server akan tertimpa. Simpan perubahan tersebut ke folder `db/` terlebih dahulu jika ingin dipertahankan.
+>
+> Edit manual di `/opt/genieacs/genieacs.env` juga tertimpa (kecuali JWT secret). Masukkan pengaturan tambahan ke `install.sh`.
+>
+> Pada update pertama dari versi lama (JWT secret masih `secret`), semua user akan ter-logout satu kali karena secret diganti dengan nilai acak.
+
+Setelah update, lakukan **Hard Refresh** (`Ctrl + Shift + R` atau `Ctrl + F5`) pada browser untuk membersihkan cache frontend.
+
+---
+
+## Reinstall Bersih (Hapus Total)
+
+```bash
+sudo bash reinstall.sh
+```
+
+> ⚠️ **SELURUH DATABASE GENIEACS DIHAPUS PERMANEN**: semua data perangkat ONT, tag/lokasi, task, fault, user, dan konfigurasi buatan sendiri. ONT akan muncul kembali setelah inform berikutnya, tetapi tag & riwayatnya hilang. Backup terlebih dahulu jika perlu:
+>
+> ```bash
+> mongodump --db genieacs --out /root/backup-genieacs
+> ```
+>
+> Untuk sekadar update tanpa kehilangan data, gunakan `install.sh`.
 
 ---
 
@@ -148,8 +178,15 @@ docker-compose restart
 | ---------------------- | ------ | -------------------------------------- |
 | **GenieACS UI**        | `3000` | Tampilan Web GUI Frontend              |
 | **GenieACS CWMP**      | `7547` | Port koneksi TR-069 dari ONT           |
-| **GenieACS NBI (API)** | `7557` | Northbound API untuk automasi & preset |
+| **GenieACS NBI (API)** | `7557` | Northbound API untuk automasi & preset. **Hanya listen di `127.0.0.1`** |
 | **GenieACS FS**        | `7567` | File server untuk firmware update      |
+
+### Catatan Keamanan
+
+- **NBI tidak memiliki autentikasi**, sehingga installer membatasinya ke `127.0.0.1` (`GENIEACS_NBI_INTERFACE`). Script automasi yang memakai NBI harus dijalankan di server GenieACS itu sendiri.
+- **JWT secret UI** (`GENIEACS_UI_JWT_SECRET` di `/opt/genieacs/genieacs.env`) dibuat acak saat instalasi. Jangan sebarkan isi file ini: siapa pun yang memegang nilai tersebut bisa login sebagai admin tanpa password.
+- Fallback MongoDB via Docker hanya dibuka ke `127.0.0.1:27017`.
+- Role `user` memiliki akses tulis ke Provisions/Presets/Config. Turunkan ke akses baca (2) sebelum memberikan role ini ke teknisi.
 
 ---
 
